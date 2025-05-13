@@ -37,6 +37,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "598532fb-ef92-428c-9c9c-301e108416c1"
+      }
+    },
+    "owner": "arioni"
   }
 }
