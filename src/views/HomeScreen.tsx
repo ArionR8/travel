@@ -12,7 +12,7 @@ type HomeScreenProps = {
 export default function HomeScreen({ navigation }: HomeScreenProps) {
     return (
         <View>
-            <NavBoard navigation={navigation} />  {/* Pass navigation prop */}
+            <NavBoard navigation={navigation} />
             <Text>Welcome to the Home Page!</Text>
         </View>
     );
