@@ -3,4 +3,5 @@ export type RootStackParamList = {
     Greqi: undefined;
     Login: undefined;
     Dashboard: undefined;
+    GreqiSlider: undefined;
 };

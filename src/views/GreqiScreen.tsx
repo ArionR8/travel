@@ -1,3 +1,4 @@
+// src/screens/GreqiScreen.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Dimensions, FlatList, Text, View } from 'react-native';
 import GreqiImageCard from '../components/GreqiImageCard';
@@ -25,14 +26,17 @@ export default function GreqiScreen() {
         return () => clearInterval(intervalId);
     }, [currentIndex, images.length]);
 
-    if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
+    if (loading) {
+        return <ActivityIndicator style={{ flex: 1 }} />;
+    }
 
-    if (error)
+    if (error) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>{error.message}</Text>
+                <Text>{error}</Text>
             </View>
         );
+    }
 
     return (
         <FlatList

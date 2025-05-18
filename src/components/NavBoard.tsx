@@ -61,7 +61,8 @@ export default function NavBoard({ navigation }: NavBoardProps) {
                         <Text style={styles.dropdownItem}>Home</Text>
                     </TouchableOpacity>
 
-                    {user && (
+                    {/* Only show Dashboard if user role is 'admin' */}
+                    {user?.role === 'admin' && (
                         <TouchableOpacity
                             style={styles.itemWrapper}
                             onPress={() => {
@@ -73,7 +74,7 @@ export default function NavBoard({ navigation }: NavBoardProps) {
                         </TouchableOpacity>
                     )}
 
-                    {/* Added Greqqi page link */}
+                    {/* Greqi page link */}
                     <TouchableOpacity
                         style={styles.itemWrapper}
                         onPress={() => {

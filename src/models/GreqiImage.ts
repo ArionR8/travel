@@ -1,5 +1,5 @@
 export interface GreqiImage {
     id: string;
-    title?: string;
+    title: string;
     dataUri: string;
 }
