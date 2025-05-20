@@ -9,44 +9,146 @@ type DashboardNavBoardProps = {
 
 export default function DashboardNavBoard({ navigation }: DashboardNavBoardProps) {
     const [showMenu, setShowMenu] = useState(false);
+    const [showAranzhmani, setShowAranzhmani] = useState(false);
+    const [showAeroport, setShowAeroport] = useState(false);
+    const [showShtete, setShowShtete] = useState(false);
 
     return (
         <View style={styles.container}>
-            {/* Dashboard Title on the LEFT */}
             <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
                 <Text style={styles.title}>Dashboard</Text>
             </TouchableOpacity>
 
-            {/* Menu button on the RIGHT */}
             <TouchableOpacity
-                onPress={() => setShowMenu((v) => !v)}
+                onPress={() => setShowMenu(v => !v)}
                 style={styles.menuButton}
                 activeOpacity={0.7}
             >
                 <Text style={styles.menuText}>☰ Menu</Text>
             </TouchableOpacity>
 
-            {/* Dropdown menu */}
             {showMenu && (
                 <View style={styles.dropdown}>
+                    {/* Aranzhmani */}
                     <TouchableOpacity
-                        style={styles.itemWrapper}
+                        style={styles.item}
+                        onPress={() => setShowAranzhmani(v => !v)}
+                    >
+                        <Text style={styles.itemText}>
+                            Aranzhmani {showAranzhmani ? '▲' : '▼'}
+                        </Text>
+                    </TouchableOpacity>
+                    {showAranzhmani && (
+                        <View style={styles.submenu}>
+                            <TouchableOpacity
+                                style={styles.subItem}
+                                onPress={() => {
+                                    setShowMenu(false);
+                                    setShowAranzhmani(false);
+                                    navigation.navigate('AddAranzhmani');
+                                }}
+                            >
+                                <Text style={styles.itemText}>Add Aranzhmani</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.subItem}
+                                onPress={() => {
+                                    setShowMenu(false);
+                                    setShowAranzhmani(false);
+                                    navigation.navigate('ManageAranzhmani');
+                                }}
+                            >
+                                <Text style={styles.itemText}>Manage Aranzhmanet</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
+                    {/* Aeroports */}
+                    <TouchableOpacity
+                        style={styles.item}
+                        onPress={() => setShowAeroport(v => !v)}
+                    >
+                        <Text style={styles.itemText}>
+                            Aeroports {showAeroport ? '▲' : '▼'}
+                        </Text>
+                    </TouchableOpacity>
+                    {showAeroport && (
+                        <View style={styles.submenu}>
+                            <TouchableOpacity
+                                style={styles.subItem}
+                                onPress={() => {
+                                    setShowMenu(false);
+                                    setShowAeroport(false);
+                                    navigation.navigate('AddAirport');
+                                }}
+                            >
+                                <Text style={styles.itemText}>Add Aeroport</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.subItem}
+                                onPress={() => {
+                                    setShowMenu(false);
+                                    setShowAeroport(false);
+                                    navigation.navigate('ManageAirport');
+                                }}
+                            >
+                                <Text style={styles.itemText}>Manage Aeroports</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
+                    {/* Shtete */}
+                    <TouchableOpacity
+                        style={styles.item}
+                        onPress={() => setShowShtete(v => !v)}
+                    >
+                        <Text style={styles.itemText}>
+                            Shtete {showShtete ? '▲' : '▼'}
+                        </Text>
+                    </TouchableOpacity>
+                    {showShtete && (
+                        <View style={styles.submenu}>
+                            <TouchableOpacity
+                                style={styles.subItem}
+                                onPress={() => {
+                                    setShowMenu(false);
+                                    setShowShtete(false);
+                                    navigation.navigate('AddShteti');
+                                }}
+                            >
+                                <Text style={styles.itemText}>Add Shtet</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.subItem}
+                                onPress={() => {
+                                    setShowMenu(false);
+                                    setShowShtete(false);
+                                    navigation.navigate('ManageShteti');
+                                }}
+                            >
+                                <Text style={styles.itemText}>Manage Shtete</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
+                    {/* Other links */}
+                    <TouchableOpacity
+                        style={styles.item}
                         onPress={() => {
                             setShowMenu(false);
                             navigation.navigate('GreqiSlider');
                         }}
                     >
-                        <Text style={styles.dropdownItem}>Manage GreqiSlider</Text>
+                        <Text style={styles.itemText}>Manage GreqiSlider</Text>
                     </TouchableOpacity>
-
                     <TouchableOpacity
-                        style={styles.itemWrapper}
+                        style={styles.item}
                         onPress={() => {
                             setShowMenu(false);
                             navigation.navigate('Home');
                         }}
                     >
-                        <Text style={styles.dropdownItem}>Back to Home</Text>
+                        <Text style={styles.itemText}>Back to Home</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -65,37 +167,47 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#fff',
         fontWeight: 'bold',
-        // No flex here, so title stays left-aligned
     },
     menuButton: {
+        marginLeft: 'auto',
         padding: 10,
-        marginLeft: 'auto', // Push menu button to the right side
     },
     menuText: {
         fontSize: 18,
         color: '#fff',
     },
-
     dropdown: {
         position: 'absolute',
         top: 50,
         right: 10,
         backgroundColor: '#fff',
-        paddingVertical: 8,
         borderRadius: 6,
-        elevation: 4, // shadow for Android
-        shadowColor: '#000', // shadow for iOS
+        elevation: 4,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
         zIndex: 1000,
+        minWidth: 180,
+        paddingVertical: 4,
     },
-    itemWrapper: {
+    item: {
+        paddingVertical: 8,
         paddingHorizontal: 12,
-        paddingVertical: 6,
     },
-    dropdownItem: {
+    itemText: {
         fontSize: 16,
         color: '#333',
+    },
+    submenu: {
+        backgroundColor: '#f9f9f9',
+        borderLeftWidth: 2,
+        borderLeftColor: '#2980b9',
+        paddingLeft: 16,
+        marginBottom: 4,
+    },
+    subItem: {
+        paddingVertical: 6,
+        paddingHorizontal: 12,
     },
 });
