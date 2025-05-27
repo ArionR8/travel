@@ -1,6 +1,7 @@
 export type RootStackParamList = {
     Home: undefined;
     Greqi: undefined;
+    Bulgari: undefined;
     Login: undefined;
     Dashboard: undefined;
     GreqiSlider: undefined;

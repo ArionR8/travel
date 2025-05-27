@@ -6,6 +6,7 @@ import AddShtetiScreen from '../views/dashboard/AddShtetiScreen';
 import DashboardScreen from '../views/dashboard/DashboardScreen';
 import GreqiSlider from '../views/dashboard/GreqiSlider';
 
+import BulgariScreen from '../views/BulgariScreen';
 import ManageShtetiScreen from '../views/dashboard/ManageShtetiScreen';
 import GreqiScreen from '../views/GreqiScreen';
 import HomeScreen from '../views/HomeScreen';
@@ -19,6 +20,7 @@ export default function AppNavigator() {
         <Stack.Navigator>
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Greqi" component={GreqiScreen} />
+            <Stack.Screen name="Bulgari" component={BulgariScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
             <Stack.Screen name="GreqiSlider" component={GreqiSlider} />
