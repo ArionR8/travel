@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import * as Auth from '../services/AuthService';
-import { User } from '../services/AuthService';
+import { useEffect, useState } from "react";
+import * as Auth from "../services/AuthService";
+import { User } from "../services/AuthService";
 
 export function useUser() {
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
         Auth.getCurrentUser()
-            .then(u => setUser(u))
+            .then((u) => setUser(u))
             .catch(() => setUser(null));
     }, []);
 

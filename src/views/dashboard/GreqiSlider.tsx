@@ -1,4 +1,4 @@
-// src/screens/GreqiSliderForm.tsx
+// src/view/dashborad/GreqiSliderForm.tsx
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import DashboardNavBoard from '../../components/dashboard/NavBoard';
 import { RootStackParamList } from '../../navigation/types';
-import { useGreqiImages } from '../../viewmodels/useGreqiImages';
+import { useGreqi } from '../../viewmodels/useGreqi';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 type Props = { navigation: NavigationProp };
@@ -22,19 +22,18 @@ type Props = { navigation: NavigationProp };
 export default function GreqiSliderForm({ navigation }: Props) {
     const {
         images,
-        loading,
-        error,
-        message,
+        imagesLoading,
+        imagesError,
+        imagesMessage,
         addImage,
         deleteImage,
         updateImage,
-    } = useGreqiImages();
+    } = useGreqi();
 
     const [title, setTitle] = useState('');
     const [imageBase64, setImageBase64] = useState('');
     const [editingId, setEditingId] = useState<string | null>(null);
 
-    // Pick image from phone gallery
     const pickImage = async () => {
         try {
             const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -113,7 +112,15 @@ export default function GreqiSliderForm({ navigation }: Props) {
             <View style={{ flex: 1, marginHorizontal: 8 }}>
                 <Text style={styles.rowTitle}>{item.title}</Text>
             </View>
-            <TouchableOpacity onPress={() => promptUpdate(item.id, item.title, item.dataUri.replace('data:image/jpeg;base64,', ''))}>
+            <TouchableOpacity
+                onPress={() =>
+                    promptUpdate(
+                        item.id,
+                        item.title,
+                        item.dataUri.replace('data:image/jpeg;base64,', '')
+                    )
+                }
+            >
                 <Text style={styles.action}>✏️</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => confirmDelete(item.id)}>
@@ -127,9 +134,13 @@ export default function GreqiSliderForm({ navigation }: Props) {
             <DashboardNavBoard navigation={navigation} />
 
             <View style={styles.form}>
-                <Text style={styles.heading}>{editingId ? 'Edit Slider Image' : 'Add Slider Image'}</Text>
-                {message ? <Text style={styles.message}>{message}</Text> : null}
-                {error ? <Text style={[styles.message, { color: '#c00' }]}>{error}</Text> : null}
+                <Text style={styles.heading}>
+                    {editingId ? 'Edit Slider Image' : 'Add Slider Image'}
+                </Text>
+                {imagesMessage ? <Text style={styles.message}>{imagesMessage}</Text> : null}
+                {imagesError ? (
+                    <Text style={[styles.message, { color: '#c00' }]}>{imagesError}</Text>
+                ) : null}
 
                 <TextInput
                     placeholder="Title"
@@ -148,11 +159,13 @@ export default function GreqiSliderForm({ navigation }: Props) {
                 ) : null}
 
                 <TouchableOpacity
-                    style={[styles.button, loading && { opacity: 0.6 }]}
+                    style={[styles.button, imagesLoading && { opacity: 0.6 }]}
+                    disabled={imagesLoading}
                     onPress={handleAddOrUpdate}
-                    disabled={loading}
                 >
-                    <Text style={styles.buttonText}>{loading ? 'Saving…' : editingId ? 'Update Image' : 'Add Image'}</Text>
+                    <Text style={styles.buttonText}>
+                        {imagesLoading ? 'Saving…' : editingId ? 'Update Image' : 'Add Image'}
+                    </Text>
                 </TouchableOpacity>
             </View>
 
@@ -162,7 +175,7 @@ export default function GreqiSliderForm({ navigation }: Props) {
                 renderItem={renderRow}
                 ListEmptyComponent={() => (
                     <Text style={{ padding: 20, textAlign: 'center' }}>
-                        {loading ? 'Loading…' : 'No images yet.'}
+                        {imagesLoading ? 'Loading…' : 'No images yet.'}
                     </Text>
                 )}
                 contentContainerStyle={{ paddingBottom: 40 }}
@@ -212,7 +225,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: { color: '#fff', fontWeight: '600' },
-
     row: {
         flexDirection: 'row',
         alignItems: 'center',

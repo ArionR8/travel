@@ -1,54 +1,51 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { AxiosHeaders } from "axios";
+// src/services/AeroportiService.ts
 import { Airport } from "../models/Aeroporti";
+import api from "./api"; // centralized axios instance with interceptor token
 
-const api = axios.create({
-  baseURL: "http://172.22.32.1:5000/api",
-  // withCredentials: true, // enable only if backend needs it
-});
-
-api.interceptors.request.use(
-  async (config) => {
-    const token = await AsyncStorage.getItem("accessToken");
-    if (token) {
-      if (!config.headers) {
-        config.headers = new AxiosHeaders();
-      } else if (!(config.headers instanceof AxiosHeaders)) {
-        config.headers = new AxiosHeaders(config.headers);
-      }
-      config.headers.set("Authorization", `Bearer ${token}`);
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Fetch all airports (if needed)
 export async function fetchAirports(): Promise<Airport[]> {
-  const { data } = await api.get<Airport[]>("/airports");
-  return data;
+  try {
+    const { data } = await api.get<Airport[]>("/api/airports"); // note the /api prefix here
+    return data;
+  } catch (err: any) {
+    console.error("fetchAirports error:", err.response?.data || err.message);
+    throw err;
+  }
 }
 
-// Fetch airports filtered by shtetiId
-export async function fetchAirportsByShteti(
-  shtetiId: string
-): Promise<Airport[]> {
-  const { data } = await api.get<Airport[]>(`/airports/by-shteti/${shtetiId}`);
-  return data;
+export async function fetchAirportsByShteti(shtetiId: string): Promise<Airport[]> {
+  try {
+    const { data } = await api.get<Airport[]>(`/api/airports/by-shteti/${shtetiId}`);
+    return data;
+  } catch (err: any) {
+    console.error("fetchAirportsByShteti error:", err.response?.data || err.message);
+    throw err;
+  }
 }
 
 export async function addAirport(payload: Partial<Airport>): Promise<void> {
-  await api.post("/add-airports", payload);
+  try {
+    await api.post("/api/add-airports", payload);
+  } catch (err: any) {
+    console.error("addAirport error:", err.response?.data || err.message);
+    throw err;
+  }
 }
 
-export async function updateAirport(
-  id: string,
-  payload: Partial<Airport>
-): Promise<Airport> {
-  const { data } = await api.put<Airport>(`/airports-update/${id}`, payload);
-  return data;
+export async function updateAirport(id: string, payload: Partial<Airport>): Promise<Airport> {
+  try {
+    const { data } = await api.put<Airport>(`/api/airports-update/${id}`, payload);
+    return data;
+  } catch (err: any) {
+    console.error("updateAirport error:", err.response?.data || err.message);
+    throw err;
+  }
 }
 
 export async function deleteAirport(id: string): Promise<void> {
-  await api.delete(`/airports-delete/${id}`);
+  try {
+    await api.delete(`/api/airports-delete/${id}`);
+  } catch (err: any) {
+    console.error("deleteAirport error:", err.response?.data || err.message);
+    throw err;
+  }
 }

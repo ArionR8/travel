@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import * as Auth from '../services/AuthService';
-import { User } from '../services/AuthService';
+import { useState } from "react";
+import * as Auth from "../services/AuthService";
+import { User } from "../services/AuthService";
 
 export function useAuth() {
     const [loading, setLoading] = useState(false);

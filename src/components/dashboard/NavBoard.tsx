@@ -141,6 +141,27 @@ export default function DashboardNavBoard({ navigation }: DashboardNavBoardProps
                     >
                         <Text style={styles.itemText}>Manage GreqiSlider</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.item}
+                        onPress={() => {
+                            setShowMenu(false);
+                            navigation.navigate('GreqiHotels');
+                        }}
+                    >
+                        <Text style={styles.itemText}>Manage Greqi Hotels</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.item}
+                        onPress={() => {
+                            setShowMenu(false);
+                            navigation.navigate('BullgariSlider');
+                        }}
+                    >
+                        <Text style={styles.itemText}>Manage BullgariSlider</Text>
+                    </TouchableOpacity>
+
                     <TouchableOpacity
                         style={styles.item}
                         onPress={() => {

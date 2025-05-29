@@ -2,11 +2,12 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
-import AddShtetiScreen from '../views/dashboard/AddShtetiScreen';
-import DashboardScreen from '../views/dashboard/DashboardScreen';
-import GreqiSlider from '../views/dashboard/GreqiSlider';
-
 import BulgariScreen from '../views/BulgariScreen';
+import AddShtetiScreen from '../views/dashboard/AddShtetiScreen';
+// import BullgariSlider from '../views/dashboard/BulgariImage';
+import DashboardScreen from '../views/dashboard/DashboardScreen';
+//import GreqiHotels from '../views/dashboard/GreqiHotel';
+import GreqiSlider from '../views/dashboard/GreqiSlider';
 import ManageShtetiScreen from '../views/dashboard/ManageShtetiScreen';
 import GreqiScreen from '../views/GreqiScreen';
 import HomeScreen from '../views/HomeScreen';
@@ -24,7 +25,8 @@ export default function AppNavigator() {
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
             <Stack.Screen name="GreqiSlider" component={GreqiSlider} />
-
+            {/*<Stack.Screen name="GreqiHotels" component={GreqiHotels} />*/}
+            {/*<Stack.Screen name="BullgariSlider" component={BullgariSlider} />*/}
             <Stack.Screen name="AddShteti" component={AddShtetiScreen} />
             <Stack.Screen name="ManageShteti" component={ManageShtetiScreen} />
         </Stack.Navigator>

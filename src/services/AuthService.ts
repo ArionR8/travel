@@ -1,4 +1,6 @@
+// /src/services/AuthService.ts
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "./api"; // ✅ Import your Axios instance
 
 export interface User {
   id: number;
@@ -11,27 +13,37 @@ export interface User {
 }
 
 const STORAGE_KEY = "current_user";
+const TOKEN_KEY = "auth_token";
 
 export async function login(username: string, password: string): Promise<User> {
-  const res = await fetch("http://172.22.32.1:5000/api/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
+  try {
+    const response = await api.post("/api/login", {
+      username,
+      password,
+    });
 
-  if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(txt || "Login failed");
+    const data = response.data;
+    const user: User = data.user;
+    const token: string = data.token;
+
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    await AsyncStorage.setItem(TOKEN_KEY, token);
+
+    return user;
+  } catch (error: any) {
+    // Handle Axios error properly
+    const message =
+      error.response?.data?.message ||
+      error.response?.data ||
+      error.message ||
+      "Login failed";
+    throw new Error(message);
   }
-
-  const data = await res.json();
-  const user: User = data.user;
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-  return user;
 }
 
 export async function logout(): Promise<void> {
   await AsyncStorage.removeItem(STORAGE_KEY);
+  await AsyncStorage.removeItem(TOKEN_KEY);
 }
 
 export async function getCurrentUser(): Promise<User | null> {
@@ -42,4 +54,8 @@ export async function getCurrentUser(): Promise<User | null> {
   } catch {
     return null;
   }
+}
+
+export async function getToken(): Promise<string | null> {
+  return AsyncStorage.getItem(TOKEN_KEY);
 }

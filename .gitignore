@@ -1,5 +1,8 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# Ignore local API config
+src/config/localConfig.tsx
+
 # dependencies
 node_modules/
 

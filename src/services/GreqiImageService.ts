@@ -1,9 +1,5 @@
-import axios from "axios";
 import { GreqiImage } from "../models/GreqiImage";
-
-const api = axios.create({
-  baseURL: "http://172.22.32.1:5000/api",
-});
+import api from "./api";
 
 interface ApiRow {
   id: string;
@@ -11,25 +7,27 @@ interface ApiRow {
   imageBase64: string;
 }
 
-// Fetch all images
 export async function fetchGreqiImages(): Promise<GreqiImage[]> {
-  const { data } = await api.get<ApiRow[]>("/greqi-images");
-  return data.map((row) => ({
-    id: row.id,
-    title: row.title,
-    dataUri: `data:image/jpeg;base64,${row.imageBase64}`,
-  }));
+  try {
+    const { data } = await api.get<ApiRow[]>("/api/greqi-images"); // path stays the same
+    return data.map((row) => ({
+      id: row.id,
+      title: row.title,
+      dataUri: `data:image/jpeg;base64,${row.imageBase64}`,
+    }));
+  } catch (err: any) {
+    console.error("fetchGreqiImages error:", err.response?.data || err.message);
+    throw err;
+  }
 }
 
-// Add new image
 export async function addGreqiImage(
   title: string,
   imageBase64: string
 ): Promise<void> {
   try {
-    // Strip prefix if exists before sending to backend
     const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
-    await api.post("/add-greqi-image", {
+    await api.post("/api/add-greqi-image", {
       title,
       imageBase64: cleanBase64,
     });
@@ -39,12 +37,15 @@ export async function addGreqiImage(
   }
 }
 
-// Delete image by id
 export async function deleteGreqiImage(id: string): Promise<void> {
-  await api.delete(`/greqi-image-delete/${id}`);
+  try {
+    await api.delete(`/api/greqi-image-delete/${id}`);
+  } catch (err: any) {
+    console.error("deleteGreqiImage error:", err.response?.data || err.message);
+    throw err;
+  }
 }
 
-// Update image (title or imageBase64) by id
 export async function updateGreqiImage(
   id: string,
   title: string,
@@ -53,10 +54,9 @@ export async function updateGreqiImage(
   try {
     const payload: any = { title };
     if (imageBase64) {
-      // Strip prefix if exists before sending to backend
       payload.imageBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
     }
-    await api.put(`/update-greqi-image/${id}`, payload);
+    await api.put(`/api/update-greqi-image/${id}`, payload);
   } catch (err: any) {
     console.error("updateGreqiImage error:", err.response?.data || err.message);
     throw err;

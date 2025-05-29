@@ -7,11 +7,13 @@ import {
     StyleSheet,
     View,
 } from 'react-native';
+
 import { HomeImage } from '../../assets/images';
-import NavBoard from '../components/NavBoard';
 import { RootStackParamList } from '../navigation/types';
 
 import CheckItem from '../components/CheckItem';
+//import Footer from '../components/Footer';
+import NavBoard from '../components/NavBoard';
 import PopularCountriesBox from '../components/PopularCountriesBox';
 import SpecialOfferBox from '../components/SpecialOfferBox';
 
@@ -29,14 +31,15 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                 <NavBoard navigation={navigation} />
             </View>
 
-            {/* Scrollable content including image */}
+            {/* Scrollable content */}
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
             >
+                {/* Top image */}
                 <Image source={HomeImage} style={styles.image} />
 
-                {/* Wrap check items and offer boxes with padding container */}
+                {/* Main content */}
                 <View style={styles.contentWrapper}>
                     <View style={styles.checksWrapper}>
                         <CheckItem label="Udhëtime" />
@@ -53,6 +56,9 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                         <PopularCountriesBox />
                     </View>
                 </View>
+
+
+                {/*<Footer />*/}
             </ScrollView>
         </View>
     );
@@ -76,7 +82,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     scrollContainer: {
-        paddingTop: 60, // padding so content doesn't go under navbar
+        paddingTop: 60, // offset for fixed navbar
         paddingBottom: 20,
     },
     image: {

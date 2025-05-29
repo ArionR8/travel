@@ -1,23 +1,40 @@
-// services/AranzhmaniService.ts
-import axios from 'axios';
 import { Aranzhmani } from '../models/Aranzhmani';
-
-const api = axios.create({ baseURL: 'http://192.168.100.90:5000/api', withCredentials: true });
+import api from './api'; // import your centralized api with interceptor token
 
 export async function fetchAranzhmanet(): Promise<Aranzhmani[]> {
-    const { data } = await api.get<Aranzhmani[]>('/aranzhmanet');
-    return data;
+    try {
+        const { data } = await api.get<Aranzhmani[]>('/aranzhmanet');
+        return data;
+    } catch (err: any) {
+        console.error('fetchAranzhmanet error:', err.response?.data || err.message);
+        throw err;
+    }
 }
 
 export async function addAranzhmani(payload: Partial<Aranzhmani>): Promise<void> {
-    await api.post('/add-Aranzhmani', payload);
+    try {
+        await api.post('/add-Aranzhmani', payload);
+    } catch (err: any) {
+        console.error('addAranzhmani error:', err.response?.data || err.message);
+        throw err;
+    }
 }
 
 export async function updateAranzhmani(id: string, payload: Partial<Aranzhmani>): Promise<Aranzhmani> {
-    const { data } = await api.put<Aranzhmani>(`/Aranzhmani-update/${id}`, payload);
-    return data;
+    try {
+        const { data } = await api.put<Aranzhmani>(`/Aranzhmani-update/${id}`, payload);
+        return data;
+    } catch (err: any) {
+        console.error('updateAranzhmani error:', err.response?.data || err.message);
+        throw err;
+    }
 }
 
 export async function deleteAranzhmani(id: string): Promise<void> {
-    await api.delete(`/Aranzhmani-delete/${id}`);
+    try {
+        await api.delete(`/Aranzhmani-delete/${id}`);
+    } catch (err: any) {
+        console.error('deleteAranzhmani error:', err.response?.data || err.message);
+        throw err;
+    }
 }
