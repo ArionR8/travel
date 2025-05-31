@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Button,
+    Alert,
     KeyboardAvoidingView,
     Platform,
+    ScrollView,
     StyleSheet,
     Text,
     TextInput,
-    View,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { fetchShtetet } from '../../services/ShtetiService';
@@ -15,7 +17,7 @@ import { useAirport } from '../../viewmodels/useAeroport';
 interface FormData {
     emri: string;
     akronimi: string;
-    shtetiId: string; // <-- emri i saktë që pranon backend-i
+    shtetiId: string;
 }
 
 export default function AddAirportScreen() {
@@ -59,55 +61,117 @@ export default function AddAirportScreen() {
 
     const onSubmit = () => {
         if (!form.emri.trim() || !form.akronimi.trim() || !form.shtetiId) {
-            alert('Ju lutem plotësoni të gjitha fushat!');
+            Alert.alert('Kujdes', 'Ju lutem plotësoni të gjitha fushat!', [
+                { text: 'OK', style: 'default' }
+            ]);
             return;
         }
 
-        create(form); // Tani forma është e saktë me shtetiId
+        create(form);
     };
 
     return (
         <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.container}
         >
-            {message ? <Text style={styles.messageSuccess}>{message}</Text> : null}
-            {error ? <Text style={styles.messageError}>{error}</Text> : null}
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text style={styles.title}>Regjistro Aeroport të Ri</Text>
+                    <Text style={styles.subtitle}>Plotëso të dhënat për aeroportin</Text>
+                </View>
 
-            <Text style={styles.label}>Emri i Aeroportit</Text>
-            <TextInput
-                style={styles.input}
-                value={form.emri}
-                onChangeText={(v) => setForm((f) => ({ ...f, emri: v }))}
-                placeholder="Shkruani emrin"
-            />
+                {/* Messages */}
+                {message && (
+                    <View style={styles.messageContainer}>
+                        <Text style={styles.messageSuccess}>✅ {message}</Text>
+                    </View>
+                )}
+                {error && (
+                    <View style={styles.messageContainer}>
+                        <Text style={styles.messageError}>❌ {error}</Text>
+                    </View>
+                )}
 
-            <Text style={styles.label}>Akronimi</Text>
-            <TextInput
-                style={styles.input}
-                value={form.akronimi}
-                onChangeText={(v) => setForm((f) => ({ ...f, akronimi: v }))}
-                placeholder="Shembull: TIA"
-            />
+                {/* Form */}
+                <View style={styles.formContainer}>
+                    {/* Airport Name Field */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Emri i Aeroportit</Text>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={[
+                                    styles.input,
+                                    form.emri ? styles.inputFocused : null
+                                ]}
+                                value={form.emri}
+                                onChangeText={(v) => setForm((f) => ({ ...f, emri: v }))}
+                                placeholder="Shkruani emrin e aeroportit"
+                                placeholderTextColor="#9CA3AF"
+                            />
+                        </View>
+                    </View>
 
-            <Text style={styles.label}>Zgjidh Shtetin</Text>
-            <DropDownPicker
-                open={open}
-                value={value}
-                items={items}
-                setOpen={setOpen}
-                setValue={setValue}
-                setItems={setItems}
-                placeholder="-- Zgjidh shtetin --"
-                style={styles.dropdown}
-                dropDownContainerStyle={styles.dropdownContainer}
-                zIndex={1000}
-                zIndexInverse={3000}
-            />
+                    {/* Acronym Field */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Akronimi</Text>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={[
+                                    styles.input,
+                                    form.akronimi ? styles.inputFocused : null
+                                ]}
+                                value={form.akronimi}
+                                onChangeText={(v) => setForm((f) => ({ ...f, akronimi: v.toUpperCase() }))}
+                                placeholder="Shembull: TIA"
+                                placeholderTextColor="#9CA3AF"
+                                maxLength={3}
+                                autoCapitalize="characters"
+                            />
+                        </View>
+                        <Text style={styles.helperText}>Maksimumi 3 shkronja</Text>
+                    </View>
 
-            <View style={{ marginTop: 20 }}>
-                <Button title="Regjistro Aeroportin" onPress={onSubmit} />
-            </View>
+                    {/* Country Dropdown */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Zgjidh Shtetin</Text>
+                        <View style={styles.dropdownWrapper}>
+                            <DropDownPicker
+                                open={open}
+                                value={value}
+                                items={items}
+                                setOpen={setOpen}
+                                setValue={setValue}
+                                setItems={setItems}
+                                placeholder="-- Zgjidh shtetin --"
+                                style={styles.dropdown}
+                                dropDownContainerStyle={styles.dropdownContainer}
+                                textStyle={styles.dropdownText}
+                                placeholderStyle={styles.dropdownPlaceholder}
+                                zIndex={1000}
+                                zIndexInverse={3000}
+                                listMode="SCROLLVIEW"
+                                scrollViewProps={{
+                                    nestedScrollEnabled: true,
+                                }}
+                            />
+                        </View>
+                    </View>
+
+                    {/* Submit Button */}
+                    <TouchableOpacity 
+                        style={styles.submitButton} 
+                        onPress={onSubmit}
+                        activeOpacity={0.8}
+                    >
+                        <Text style={styles.submitButtonText}>🛫 Regjistro Aeroportin</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
         </KeyboardAvoidingView>
     );
 }
@@ -115,35 +179,145 @@ export default function AddAirportScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
-        backgroundColor: '#fff',
+        backgroundColor: '#F8FAFC',
     },
-    label: {
-        fontWeight: '600',
-        marginBottom: 6,
-        marginTop: 16,
+    scrollContent: {
+        flexGrow: 1,
+        padding: 20,
     },
-    input: {
-        borderWidth: 1,
-        borderColor: '#bbb',
-        borderRadius: 6,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
+    header: {
+        marginBottom: 32,
+        alignItems: 'center',
     },
-    dropdown: {
-        borderColor: '#bbb',
-        borderRadius: 6,
+    title: {
+        fontSize: 28,
+        fontWeight: '700',
+        color: '#1F2937',
+        marginBottom: 8,
+        textAlign: 'center',
     },
-    dropdownContainer: {
-        borderColor: '#bbb',
-        borderRadius: 6,
+    subtitle: {
+        fontSize: 16,
+        color: '#6B7280',
+        textAlign: 'center',
+    },
+    messageContainer: {
+        marginBottom: 20,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderRadius: 12,
+        backgroundColor: '#FFFFFF',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     messageSuccess: {
-        color: 'green',
-        marginBottom: 12,
+        color: '#059669',
+        fontSize: 16,
+        fontWeight: '600',
+        textAlign: 'center',
     },
     messageError: {
-        color: 'red',
-        marginBottom: 12,
+        color: '#DC2626',
+        fontSize: 16,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    formContainer: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        padding: 24,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 8,
+    },
+    inputGroup: {
+        marginBottom: 24,
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#374151',
+        marginBottom: 8,
+    },
+    inputContainer: {
+        position: 'relative',
+    },
+    input: {
+        borderWidth: 2,
+        borderColor: '#E5E7EB',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        fontSize: 16,
+        backgroundColor: '#FFFFFF',
+        color: '#1F2937',
+    },
+    inputFocused: {
+        borderColor: '#3B82F6',
+        backgroundColor: '#F8FAFC',
+    },
+    helperText: {
+        fontSize: 12,
+        color: '#6B7280',
+        marginTop: 4,
+        marginLeft: 4,
+    },
+    dropdownWrapper: {
+        zIndex: 1000,
+    },
+    dropdown: {
+        borderWidth: 2,
+        borderColor: '#E5E7EB',
+        borderRadius: 12,
+        backgroundColor: '#FFFFFF',
+        minHeight: 50,
+    },
+    dropdownContainer: {
+        borderWidth: 2,
+        borderColor: '#E5E7EB',
+        borderRadius: 12,
+        backgroundColor: '#FFFFFF',
+        maxHeight: 200,
+    },
+    dropdownText: {
+        fontSize: 16,
+        color: '#1F2937',
+    },
+    dropdownPlaceholder: {
+        fontSize: 16,
+        color: '#9CA3AF',
+    },
+    submitButton: {
+        backgroundColor: '#3B82F6',
+        borderRadius: 12,
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 8,
+        shadowColor: '#3B82F6',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 8,
+    },
+    submitButtonText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '700',
     },
 });

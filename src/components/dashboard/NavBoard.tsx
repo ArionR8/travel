@@ -156,7 +156,7 @@ export default function DashboardNavBoard({ navigation }: DashboardNavBoardProps
                         style={styles.item}
                         onPress={() => {
                             setShowMenu(false);
-                            navigation.navigate('BullgariSlider');
+                            navigation.navigate('BulgariSliderForm');
                         }}
                     >
                         <Text style={styles.itemText}>Manage BullgariSlider</Text>

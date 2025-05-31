@@ -13,5 +13,6 @@ export type RootStackParamList = {
     ManageAirport: undefined;
     AddShteti: undefined;
     ManageShteti: undefined;
+    BulgariSliderForm: undefined;
 
 };

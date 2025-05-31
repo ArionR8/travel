@@ -1,4 +1,4 @@
-let baseUrl = "http://192.168.100.90:5000"; // fallback ip
+let baseUrl = "http://10.116.10.241:5000"; // fallback ip
 
 try {
     const { LOCAL_API_BASE_URL } = require("./localConfig");

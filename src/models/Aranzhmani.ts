@@ -3,12 +3,12 @@ export interface Aranzhmani {
     titulli: string;
     shtetiId: string;
     airportId: string;
-    cmimi: number;
-    nrPersonave: number;
-    nrNeteve: number;
+    cmimi: string;
+    nrPersonave: string;
+    nrNeteve: string;
     llojiDhomes: string;
     sherbimi: string;
     dataNisjes: string;
     dataKthimit: string;
-    rating: number;
+    rating: string;
 }

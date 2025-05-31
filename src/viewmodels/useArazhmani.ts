@@ -9,15 +9,19 @@ export function useAranzhmani() {
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
 
-    const load = async () => {
-        setLoading(true);
-        try {
-            const arr = await fetchAranzhmanet();
-            setItems(arr);
-        } catch {
-            setError('Failed to load');
-        } finally { setLoading(false); }
-    };
+   const load = async () => {
+    setLoading(true);
+    try {
+        const arr = await fetchAranzhmanet();
+        setItems(arr);
+    } catch (err) {
+        console.error("fetchAranzhmanet error:", err); 
+        setError('Failed to load');
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     useEffect(() => { load(); }, []);
 
