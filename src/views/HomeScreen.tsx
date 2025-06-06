@@ -10,13 +10,13 @@ import {
 } from 'react-native';
 
 import { HomeImage } from '../../assets/images';
-import { RootStackParamList } from '../navigation/types';
-
 import CheckItem from '../components/CheckItem';
-//import Footer from '../components/Footer';
+import Footer from '../components/Footer';
 import NavBoard from '../components/NavBoard';
 import PopularCountriesBox from '../components/PopularCountriesBox';
 import SpecialOfferBox from '../components/SpecialOfferBox';
+import Subscription from '../components/SubscriptionForm';
+import { RootStackParamList } from '../navigation/types';
 
 type HomeScreenProps = {
     navigation: StackNavigationProp<RootStackParamList, 'Home'>;
@@ -159,7 +159,9 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                     </View>
                 </View>
 
-                {/*<Footer />*/}
+                <Subscription />
+
+                <Footer />
             </ScrollView>
         </View>
     );
@@ -188,7 +190,7 @@ const styles = StyleSheet.create({
         paddingTop: 60, // offset for fixed navbar
         paddingBottom: 30,
     },
-    
+
     // Hero Section Styles
     heroSection: {
         position: 'relative',
