@@ -1,16 +1,18 @@
-// src/screens/GreqiScreen.tsx
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import {
     ActivityIndicator,
     Dimensions,
     FlatList,
+    Image,
     ScrollView,
     StyleSheet,
     Text,
-    View
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
+import Footer from '../components/Footer';
 import GreqiImageCard from '../components/GreqiImageCard';
 import NavBoard from '../components/NavBoard';
 import { RootStackParamList } from '../navigation/types';
@@ -25,33 +27,14 @@ type GreqiScreenProps = {
 export default function GreqiScreen({ navigation }: GreqiScreenProps) {
     const {
         images,
-        //hotels,
         imagesLoading,
         hotelsLoading,
         imagesError,
         hotelsError,
     } = useGreqi();
 
-    const flatListRef = useRef<FlatList>(null);
-    const [currentIndex, setCurrentIndex] = useState(0);
-
     const loading = imagesLoading || hotelsLoading;
     const error = imagesError || hotelsError;
-
-    useEffect(() => {
-        if (images.length === 0) return;
-
-        const intervalId = setInterval(() => {
-            let nextIndex = currentIndex + 1;
-            if (nextIndex >= images.length) {
-                nextIndex = 0;
-            }
-            setCurrentIndex(nextIndex);
-            flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
-        }, 3000);
-
-        return () => clearInterval(intervalId);
-    }, [currentIndex, images.length]);
 
     if (loading) {
         return <ActivityIndicator style={{ flex: 1 }} />;
@@ -72,16 +55,14 @@ export default function GreqiScreen({ navigation }: GreqiScreenProps) {
                 <NavBoard navigation={navigation} />
             </View>
 
-            {/* Scrollable content */}
             <ScrollView contentContainerStyle={styles.scrollWrapper}>
-                {/* Title */}
+                {/* Title above carousel */}
                 <View style={styles.titleWrapper}>
                     <Text style={styles.title}>Visit Greece</Text>
                 </View>
 
-                {/* Image Carousel */}
+                {/* Image carousel */}
                 <FlatList
-                    ref={flatListRef}
                     data={images}
                     keyExtractor={(img) => img.id}
                     horizontal
@@ -92,23 +73,64 @@ export default function GreqiScreen({ navigation }: GreqiScreenProps) {
                             <GreqiImageCard image={item} />
                         </View>
                     )}
-                    getItemLayout={(_, index) => ({
-                        length: width,
-                        offset: width * index,
-                        index,
-                    })}
-                    onScrollToIndexFailed={() => { }}
                     style={styles.flatList}
                     contentContainerStyle={{ paddingBottom: 20 }}
                 />
 
-                {/* Hotel Cards 
-                <View style={styles.hotelsWrapper}>
-                    <Text style={styles.subTitle}>Top Hotels in Greece</Text>
-                    {hotels.map((hotel) => (
-                        <GreqiHotelCard key={hotel.id} hotel={hotel} />
-                    ))}
-                </View>*/}
+                {/* Blue banner with white text below carousel */}
+                <View style={styles.banner}>
+                    <Text style={styles.bannerText}>Qytetet e Greqis - A Piece of Paradise</Text>
+                </View>
+
+                {/* City blocks */}
+                <View style={styles.cityBlock}>
+                    <View style={styles.textContainer}>
+                        <Text style={styles.cityDescription}>
+                            Athina është një qytet që bashkon historinë dhe modernitetin. Akropoli dhe Partenoni janë atraksionet kryesore, ndërsa lagjet e vjetra dhe plazhet përreth ofrojnë një përvojë të pasur kulturore dhe natyrore.
+                        </Text>
+                        <TouchableOpacity style={styles.offerButton}>
+                            <Text style={styles.offerButtonText}>Ofertat për Athin</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Image
+                        source={{ uri: 'https://expertvagabond.com/wp-content/uploads/things-to-do-athens-guide.jpg' }}
+                        style={styles.cityImage}
+                        resizeMode="cover"
+                    />
+                </View>
+
+                <View style={styles.cityBlockReverse}>
+                    <Image
+                        source={{ uri: 'https://www.discovergreece.com/sites/default/files/styles/og_image/public/2019-12/2-thessaloniki_and_the_white_tower_from_above-1.jpg' }}
+                        style={styles.cityImage}
+                        resizeMode="cover"
+                    />
+                    <View style={styles.textContainer}>
+                        <Text style={styles.cityDescription}>
+                            Selaniku, qyteti i dytë më i madh në Greqi, është një nyje e rëndësishme historike, kulturore dhe ekonomike në Ballkan. I njohur për port i madh dhe një qendër aktive për festivale, arsim dhe tregti.
+                        </Text>
+                        <TouchableOpacity style={styles.offerButton}>
+                            <Text style={styles.offerButtonText}>Ofertat për Selaniku</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <View style={styles.cityBlock}>
+                    <View style={styles.textContainer}>
+                        <Text style={styles.cityDescription}>
+                            Patra, qyteti i tretë më i madh në Greqi, është një port i rëndësishëm që lidh vendin me Italinë dhe pjesë të tjera të Europës. Qyteti ka edhe monumente historike si Odeoni Antik dhe Kalaja.
+                        </Text>
+                        <TouchableOpacity style={styles.offerButton}>
+                            <Text style={styles.offerButtonText}>Ofertat për Patra</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Image
+                        source={{ uri: 'https://v9c9u8s9.delivery.rocketcdn.me/wp-content/uploads/2021/09/Upper-town-Patras-.jpg' }}
+                        style={styles.cityImage}
+                        resizeMode="cover"
+                    />
+                </View>
+                <Footer />
             </ScrollView>
         </View>
     );
@@ -138,27 +160,77 @@ const styles = StyleSheet.create({
     },
     titleWrapper: {
         marginTop: 10,
-        marginBottom: 10,
+        marginBottom: 20,
         paddingHorizontal: 20,
+        // you can add more container styling here if needed
     },
     title: {
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: 'bold',
-        color: '#1f2937',
+        color: '#000000',        // black text
         textAlign: 'center',
+        letterSpacing: 3,        // space out letters for style
+        textTransform: 'uppercase', // uppercase letters like ancient inscriptions
+        fontFamily: 'serif',     // serif font for classical Greek feel
+        textShadowColor: '#999', // subtle shadow for depth
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 1,
     },
     flatList: {
         flexGrow: 0,
+        marginBottom: 20,
     },
-    hotelsWrapper: {
+    banner: {
+        backgroundColor: '#2563EB', // blue-600
+        paddingVertical: 12,
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    bannerText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    cityBlock: {
+        flexDirection: 'row',
+        marginBottom: 30,
         paddingHorizontal: 20,
-        marginTop: 10,
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
-    subTitle: {
-        fontSize: 22,
-        fontWeight: '600',
-        color: '#1f2937',
+    cityBlockReverse: {
+        flexDirection: 'row-reverse',
+        marginBottom: 30,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    textContainer: {
+        flex: 1,
+        paddingRight: 10,
+        maxWidth: '50%',
+    },
+    cityDescription: {
+        color: '#2563EB', // blue-600
+        fontSize: 14,
         marginBottom: 10,
+    },
+    offerButton: {
+        backgroundColor: '#2563EB',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 6,
+        alignSelf: 'flex-start',
+    },
+    offerButtonText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 14,
+    },
+    cityImage: {
+        width: '45%',
+        height: 120,
+        borderRadius: 10,
     },
     centered: {
         flex: 1,
