@@ -79,3 +79,17 @@ export async function register(userData: {
     throw new Error(message);
   }
 }
+
+export async function getUserCount(): Promise<number> {
+  try {
+    const response = await api.get("/api/users-count");
+    return response.data.count;
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message ||
+      error.response?.data ||
+      error.message ||
+      "Failed to fetch user count";
+    throw new Error(message);
+  }
+}

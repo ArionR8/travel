@@ -83,6 +83,37 @@ export default function NavBoard({ navigation }: NavBoardProps) {
                         <Text style={styles.dropdownItem}>Greqi</Text>
                     </TouchableOpacity>
 
+                    <TouchableOpacity
+                        style={styles.itemWrapper}
+                        onPress={() => {
+                            setShowMenu(false);
+                            navigation.navigate('Bulgari');
+                        }}
+                    >
+                        <Text style={styles.dropdownItem}>Bullgari</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.itemWrapper}
+                        onPress={() => {
+                            setShowMenu(false);
+                            navigation.navigate('Dubai');
+                        }}
+                    >
+                        <Text style={styles.dropdownItem}>Dubai</Text>
+                    </TouchableOpacity>
+
+                    {/* New ContactUs link */}
+                    <TouchableOpacity
+                        style={styles.itemWrapper}
+                        onPress={() => {
+                            setShowMenu(false);
+                            navigation.navigate('ContactUs');
+                        }}
+                    >
+                        <Text style={styles.dropdownItem}>Contact Us</Text>
+                    </TouchableOpacity>
+
                     {user ? (
                         <TouchableOpacity style={styles.itemWrapper} onPress={handleLogout}>
                             <Text style={styles.dropdownItem}>Logout</Text>

@@ -2,7 +2,10 @@ export type RootStackParamList = {
     Home: undefined;
     Greqi: undefined;
     Bulgari: undefined;
+    DubaiPrice: undefined;
+    Dubai: undefined;
     Register: undefined;
+    ContactUs: undefined;
     Dashboard: undefined;
     GreqiSlider: undefined;
     GreqiHotels: undefined;

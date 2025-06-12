@@ -63,7 +63,7 @@ export default function DashboardNavBoard({ navigation }: DashboardNavBoardProps
                         </View>
                     )}
 
-                    {/* Aeroports */}
+                    {/* Aeroport */}
                     <TouchableOpacity
                         style={styles.item}
                         onPress={() => setShowAeroport(v => !v)}
@@ -131,7 +131,7 @@ export default function DashboardNavBoard({ navigation }: DashboardNavBoardProps
                         </View>
                     )}
 
-                    {/* Other links */}
+                    {/* Other Pages */}
                     <TouchableOpacity
                         style={styles.item}
                         onPress={() => {
@@ -160,6 +160,16 @@ export default function DashboardNavBoard({ navigation }: DashboardNavBoardProps
                         }}
                     >
                         <Text style={styles.itemText}>Manage BullgariSlider</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.item}
+                        onPress={() => {
+                            setShowMenu(false);
+                            navigation.navigate('DubaiPrice');
+                        }}
+                    >
+                        <Text style={styles.itemText}>Manage DubaiPrice</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
