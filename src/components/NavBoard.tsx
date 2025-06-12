@@ -45,7 +45,7 @@ export default function NavBoard({ navigation }: NavBoardProps) {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Bani Travell</Text>
-            <TouchableOpacity onPress={() => setShowMenu(v => !v)} style={styles.menuButton}>
+            <TouchableOpacity onPress={() => setShowMenu(prev => !prev)} style={styles.menuButton}>
                 <Text style={styles.menuText}>☰ Menu</Text>
             </TouchableOpacity>
 
@@ -61,7 +61,6 @@ export default function NavBoard({ navigation }: NavBoardProps) {
                         <Text style={styles.dropdownItem}>Home</Text>
                     </TouchableOpacity>
 
-                    {/* Only show Dashboard if user role is 'admin' */}
                     {user?.role === 'admin' && (
                         <TouchableOpacity
                             style={styles.itemWrapper}
@@ -74,7 +73,6 @@ export default function NavBoard({ navigation }: NavBoardProps) {
                         </TouchableOpacity>
                     )}
 
-                    {/* Greqi page link */}
                     <TouchableOpacity
                         style={styles.itemWrapper}
                         onPress={() => {
@@ -135,6 +133,16 @@ export default function NavBoard({ navigation }: NavBoardProps) {
                         <TouchableOpacity onPress={() => setShowLogin(false)}>
                             <Text style={styles.cancelText}>Cancel</Text>
                         </TouchableOpacity>
+
+                        {/* Register redirect */}
+                        <TouchableOpacity
+                            onPress={() => {
+                                setShowLogin(false);
+                                navigation.navigate('Register');
+                            }}
+                        >
+                            <Text style={styles.registerText}>Don't have an account? Register</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
@@ -149,10 +157,19 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: '#3498db',
     },
-    title: { flex: 1, fontSize: 20, color: '#fff', fontWeight: 'bold' },
-    menuButton: { padding: 10 },
-    menuText: { fontSize: 18, color: '#fff' },
-
+    title: {
+        flex: 1,
+        fontSize: 20,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    menuButton: {
+        padding: 10,
+    },
+    menuText: {
+        fontSize: 18,
+        color: '#fff',
+    },
     dropdown: {
         position: 'absolute',
         top: 50,
@@ -162,9 +179,14 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         elevation: 4,
     },
-    itemWrapper: { paddingHorizontal: 12, paddingVertical: 6 },
-    dropdownItem: { fontSize: 16, color: '#333' },
-
+    itemWrapper: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+    },
+    dropdownItem: {
+        fontSize: 16,
+        color: '#333',
+    },
     modalOverlay: {
         flex: 1,
         backgroundColor: '#00000088',
@@ -177,7 +199,11 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 20,
     },
-    modalTitle: { fontSize: 18, marginBottom: 10, fontWeight: 'bold' },
+    modalTitle: {
+        fontSize: 18,
+        marginBottom: 10,
+        fontWeight: 'bold',
+    },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
@@ -191,6 +217,19 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         alignItems: 'center',
     },
-    loginText: { color: '#fff', fontWeight: 'bold' },
-    cancelText: { color: '#3498db', textAlign: 'center', marginTop: 10 },
+    loginText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    cancelText: {
+        color: '#3498db',
+        textAlign: 'center',
+        marginTop: 10,
+    },
+    registerText: {
+        color: '#777',
+        textAlign: 'center',
+        marginTop: 15,
+        textDecorationLine: 'underline',
+    },
 });

@@ -59,3 +59,23 @@ export async function getCurrentUser(): Promise<User | null> {
 export async function getToken(): Promise<string | null> {
   return AsyncStorage.getItem(TOKEN_KEY);
 }
+
+export async function register(userData: {
+  firstName: string;
+  lastName: string;
+  number: string;
+  email: string;
+  username: string;
+  password: string;
+}): Promise<void> {
+  try {
+    await api.post("/api/register", userData);
+  } catch (error: any) {
+    const message =
+      error.response?.data?.error ||
+      error.response?.data ||
+      error.message ||
+      "Registration failed";
+    throw new Error(message);
+  }
+}

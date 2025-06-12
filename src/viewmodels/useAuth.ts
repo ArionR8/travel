@@ -1,3 +1,4 @@
+// /src/viewmodels/useAuth.ts
 import { useState } from "react";
 import * as Auth from "../services/AuthService";
 import { User } from "../services/AuthService";
@@ -20,5 +21,25 @@ export function useAuth() {
         }
     };
 
-    return { login, loading, error };
+    const register = async (userData: {
+        firstName: string;
+        lastName: string;
+        number: string;
+        email: string;
+        username: string;
+        password: string;
+    }): Promise<void> => {
+        setLoading(true);
+        setError(null);
+        try {
+            await Auth.register(userData);
+        } catch (e: any) {
+            setError(e.message);
+            throw e;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { login, register, loading, error };
 }

@@ -78,8 +78,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                             <CheckItem label="Udhëtime" />
                             <CheckItem label="Bileta" />
                             <CheckItem label="Kroçiere" />
-                            <CheckItem label="Paketa Turistike" />
-                            <CheckItem label="Shërbime Transferi" />
+
+                            {/* Wrap these two in a horizontal View */}
+                            <View style={[styles.rowInline, { marginBottom: 20 }]}>
+                                <CheckItem label="Paketa Turistike" />
+                                <CheckItem label="Shërbime Transferi" />
+                            </View>
+
                             <CheckItem label="Hotele në të gjithë Botën" />
                         </View>
                     </View>
@@ -183,8 +188,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 5,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(52, 152, 219, 0.1)',
     },
     scrollContainer: {
         paddingTop: 60, // offset for fixed navbar
@@ -383,4 +386,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#fff',
     },
+    rowInline: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 10,
+        flexWrap: 'nowrap',
+    }
 });
