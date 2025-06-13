@@ -1,4 +1,3 @@
-// src/view/dashborad/GreqiSliderForm.tsx
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
@@ -14,7 +13,7 @@ import {
 } from 'react-native';
 import DashboardNavBoard from '../../components/dashboard/NavBoard';
 import { RootStackParamList } from '../../navigation/types';
-import { useGreqi } from '../../viewmodels/useGreqi';
+import { useGreqiImages } from '../../viewmodels/useGreqiImage';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 type Props = { navigation: NavigationProp };
@@ -22,13 +21,13 @@ type Props = { navigation: NavigationProp };
 export default function GreqiSliderForm({ navigation }: Props) {
     const {
         images,
-        imagesLoading,
-        imagesError,
-        imagesMessage,
+        loading: imagesLoading,
+        error: imagesError,
+        message: imagesMessage,
         addImage,
         deleteImage,
         updateImage,
-    } = useGreqi();
+    } = useGreqiImages();
 
     const [title, setTitle] = useState('');
     const [imageBase64, setImageBase64] = useState('');
@@ -84,7 +83,11 @@ export default function GreqiSliderForm({ navigation }: Props) {
         ]);
     };
 
-    const promptUpdate = (id: string, currentTitle: string, currentImageBase64: string) => {
+    const promptUpdate = (
+        id: string,
+        currentTitle: string,
+        currentImageBase64: string
+    ) => {
         Alert.prompt(
             'Edit Title',
             'Enter new title:',

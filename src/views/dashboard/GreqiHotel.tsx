@@ -1,330 +1,188 @@
-import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
+    ActivityIndicator,
     Alert,
     FlatList,
-    Image,
-    ScrollView,
     StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
     View,
 } from "react-native";
-import { GreqiHotel } from "../../models/GreqiHotel";
-import { useGreqi } from "../../viewmodels/useGreqi";
+import { useGreqiHotels } from "../../viewmodels/useGreqiHotel";
 
 export default function GreqiHotelManager() {
     const {
         hotels,
-        hotelsLoading,
-        hotelsError,
-        hotelsMessage,
+        loading: hotelsLoading,
+        error: hotelsError,
+        message: hotelsMessage,
         addHotel,
         deleteHotel,
         updateHotel,
-    } = useGreqi();
+        reloadHotels,
+    } = useGreqiHotels();
 
-    // Form states matching the model
-    const [name, setName] = useState("");
-    const [location, setLocation] = useState("");
-    const [rating, setRating] = useState(""); // Note: rating not saved in backend
-    const [price, setPrice] = useState("");
-    const [image, setImage] = useState<string | null>(null);
-    const [editingId, setEditingId] = useState<string | null>(null);
+    const [form, setForm] = useState({
+        id: "",
+        name: "",
+        location: "",
+        price: "",
+        imageBase64: "",
+    });
 
-    const pickImage = async () => {
-        try {
-            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-            if (!permissionResult.granted) {
-                Alert.alert(
-                    "Permission required",
-                    "Permission to access gallery is required!"
-                );
-                return;
-            }
-
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                base64: true,
-                quality: 0.7,
-                allowsEditing: true,
-            });
-
-            if (!result.canceled && result.assets.length > 0 && result.assets[0].base64) {
-                setImage(`data:image/jpeg;base64,${result.assets[0].base64}`);
-            }
-        } catch (err) {
-            Alert.alert(
-                "Image Picker Error",
-                err instanceof Error ? err.message : "Unknown error"
-            );
-        }
+    const handleChange = (key: string, value: string) => {
+        setForm({ ...form, [key]: value });
     };
 
-    const handleSubmit = async () => {
-        if (
-            !name.trim() ||
-            !location.trim() ||
-            !rating.trim() ||
-            !price.trim() ||
-            (!editingId && !image)
-        ) {
-            Alert.alert("Validation", "Please fill all fields and select an image");
+    const handleAddOrUpdate = () => {
+        const { id, name, location, price, imageBase64 } = form;
+        const priceNum = parseFloat(price);
+
+        if (!name || !location || !price || !imageBase64) {
+            Alert.alert("Please fill all fields");
             return;
         }
 
-        const parsedRating = parseFloat(rating);
-        if (isNaN(parsedRating) || parsedRating < 0 || parsedRating > 5) {
-            Alert.alert("Validation", "Rating must be a number between 0 and 5");
-            return;
+        if (id) {
+            updateHotel(id, name, location, priceNum, imageBase64);
+        } else {
+            addHotel(name, location, priceNum, imageBase64);
         }
 
-        const parsedPrice = parseFloat(price);
-        if (isNaN(parsedPrice)) {
-            Alert.alert("Validation", "Price must be a valid number");
-            return;
-        }
-
-        try {
-            if (editingId) {
-                // updateHotel(id, name, location, price, base64?)
-                await updateHotel(editingId, name.trim(), location.trim(), parsedPrice, image || undefined);
-            } else {
-                // addHotel(name, location, price, base64)
-                await addHotel(name.trim(), location.trim(), parsedPrice, image!);
-            }
-
-            resetForm();
-        } catch (err) {
-            Alert.alert("Error", err instanceof Error ? err.message : "Unknown error");
-        }
+        setForm({ id: "", name: "", location: "", price: "", imageBase64: "" });
     };
 
-    const resetForm = () => {
-        setName("");
-        setLocation("");
-        setRating("");
-        setPrice("");
-        setImage(null);
-        setEditingId(null);
+    const handleEdit = (hotel: any) => {
+        setForm({
+            id: hotel.id,
+            name: hotel.name,
+            location: hotel.location,
+            price: hotel.price.toString(),
+            imageBase64: hotel.imageBase64,
+        });
     };
 
-    const handleEdit = (hotel: GreqiHotel) => {
-        setName(hotel.name);
-        setLocation(hotel.location);
-        setRating(hotel.rating?.toString() ?? ""); // rating may be missing
-        setPrice(hotel.price.toString());
-        setImage(hotel.imageBase64 || null);
-        setEditingId(hotel.id);
-    };
-
-    const confirmDelete = (id: string) => {
-        Alert.alert("Delete Hotel", "Are you sure you want to delete this hotel?", [
+    const handleDelete = (id: string) => {
+        Alert.alert("Confirm", "Delete this hotel?", [
             { text: "Cancel", style: "cancel" },
             { text: "Delete", style: "destructive", onPress: () => deleteHotel(id) },
         ]);
     };
 
-    const renderHotel = ({ item }: { item: GreqiHotel }) => (
-        <View style={styles.card}>
-            <Image source={{ uri: item.imageBase64 }} style={styles.cardImage} />
-            <View style={styles.cardContent}>
-                <Text style={styles.hotelName}>{item.name}</Text>
-                <Text style={styles.hotelDescription}>{item.location}</Text>
-                <Text style={styles.hotelPrice}>Rating: {item.rating?.toFixed(1) ?? "N/A"} / 5</Text>
-                <Text style={styles.hotelPrice}>${item.price.toFixed(2)}</Text>
-            </View>
-            <View style={styles.actions}>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item)}>
-                    <Text style={styles.actionText}>Edit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => confirmDelete(item.id)}>
-                    <Text style={[styles.actionText, { color: "#fff" }]}>Delete</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-    );
-
     return (
         <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.form}>
-                <Text style={styles.heading}>{editingId ? "Edit Hotel" : "Add New Hotel"}</Text>
+            <Text style={styles.title}>Greqi Hotel Manager</Text>
 
-                {hotelsMessage ? <Text style={styles.message}>{hotelsMessage}</Text> : null}
-                {hotelsError ? <Text style={[styles.message, styles.error]}>{hotelsError}</Text> : null}
+            {hotelsError && <Text style={styles.error}>{hotelsError}</Text>}
+            {hotelsMessage && <Text style={styles.success}>{hotelsMessage}</Text>}
 
-                <TextInput
-                    placeholder="Name"
-                    placeholderTextColor="#333"
-                    style={styles.input}
-                    value={name}
-                    onChangeText={setName}
-                    autoCapitalize="words"
-                />
-                <TextInput
-                    placeholder="Location"
-                    placeholderTextColor="#333"
-                    style={styles.input}
-                    value={location}
-                    onChangeText={setLocation}
-                    autoCapitalize="words"
-                />
-                <TextInput
-                    placeholder="Rating (0-5)"
-                    placeholderTextColor="#333"
-                    style={styles.input}
-                    value={rating}
-                    onChangeText={setRating}
-                    keyboardType="decimal-pad"
-                />
-                <TextInput
-                    placeholder="Price"
-                    placeholderTextColor="#333"
-                    style={styles.input}
-                    value={price}
-                    onChangeText={setPrice}
-                    keyboardType="decimal-pad"
-                />
-
-                <TouchableOpacity style={styles.pickButton} onPress={pickImage}>
-                    <Text style={styles.pickButtonText}>Choose Image from Phone</Text>
-                </TouchableOpacity>
-
-                {image && <Image source={{ uri: image }} style={styles.preview} />}
-
-                <TouchableOpacity
-                    style={[styles.submitButton, hotelsLoading && { opacity: 0.6 }]}
-                    disabled={hotelsLoading}
-                    onPress={handleSubmit}
-                >
-                    <Text style={styles.submitButtonText}>
-                        {hotelsLoading ? "Saving…" : editingId ? "Update Hotel" : "Add Hotel"}
-                    </Text>
-                </TouchableOpacity>
-            </ScrollView>
-
-            <FlatList
-                data={hotels}
-                keyExtractor={(item) => item.id}
-                renderItem={renderHotel}
-                ListEmptyComponent={() => (
-                    <Text style={styles.emptyList}>
-                        {hotelsLoading ? "Loading hotels…" : "No hotels available."}
-                    </Text>
-                )}
-                contentContainerStyle={{ paddingBottom: 30 }}
+            <TextInput
+                placeholder="Name"
+                value={form.name}
+                onChangeText={(val) => handleChange("name", val)}
+                style={styles.input}
             />
+            <TextInput
+                placeholder="Location"
+                value={form.location}
+                onChangeText={(val) => handleChange("location", val)}
+                style={styles.input}
+            />
+            <TextInput
+                placeholder="Price"
+                value={form.price}
+                keyboardType="numeric"
+                onChangeText={(val) => handleChange("price", val)}
+                style={styles.input}
+            />
+            <TextInput
+                placeholder="Image Base64"
+                value={form.imageBase64}
+                onChangeText={(val) => handleChange("imageBase64", val)}
+                style={styles.input}
+            />
+
+            <TouchableOpacity onPress={handleAddOrUpdate} style={styles.button}>
+                <Text style={styles.buttonText}>
+                    {form.id ? "Update Hotel" : "Add Hotel"}
+                </Text>
+            </TouchableOpacity>
+
+            {hotelsLoading ? (
+                <ActivityIndicator size="large" style={{ marginTop: 20 }} />
+            ) : (
+                <FlatList
+                    data={hotels}
+                    keyExtractor={(item) => item.id}
+                    style={{ marginTop: 20 }}
+                    renderItem={({ item }) => (
+                        <View style={styles.card}>
+                            <Text style={styles.hotelText}>{item.name}</Text>
+                            <Text style={styles.hotelText}>📍 {item.location}</Text>
+                            <Text style={styles.hotelText}>💰 {item.price}€</Text>
+
+                            <View style={styles.actions}>
+                                <TouchableOpacity
+                                    onPress={() => handleEdit(item)}
+                                    style={[styles.actionBtn, { backgroundColor: "#3498db" }]}
+                                >
+                                    <Text style={styles.actionText}>Edit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => handleDelete(item.id)}
+                                    style={[styles.actionBtn, { backgroundColor: "#e74c3c" }]}
+                                >
+                                    <Text style={styles.actionText}>Delete</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
+                />
+            )}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#fff" },
-    form: {
-        padding: 15,
-        backgroundColor: "#f9f9f9",
-        borderBottomWidth: 1,
-        borderColor: "#ddd",
-    },
-    heading: { fontSize: 20, fontWeight: "bold", marginBottom: 12, color: "#333" },
-    message: { marginBottom: 8, fontSize: 14, color: "#27ae60" },
-    error: { color: "#c0392b" },
+    container: { flex: 1, padding: 20 },
+    title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
     input: {
-        backgroundColor: "#fff",
         borderWidth: 1,
         borderColor: "#ccc",
-        borderRadius: 6,
-        padding: 12,
-        marginBottom: 12,
-        fontSize: 16,
-        color: "#333",
-    },
-    pickButton: {
-        backgroundColor: "#27ae60",
-        padding: 14,
-        borderRadius: 6,
-        alignItems: "center",
-        marginBottom: 15,
-    },
-    pickButtonText: {
-        color: "#fff",
-        fontWeight: "600",
-        fontSize: 16,
-    },
-    preview: {
-        width: "100%",
-        height: 180,
-        borderRadius: 6,
-        marginBottom: 15,
-    },
-    submitButton: {
-        backgroundColor: "#2980b9",
-        padding: 14,
-        borderRadius: 6,
-        alignItems: "center",
-        marginBottom: 20,
-    },
-    submitButtonText: {
-        color: "#fff",
-        fontWeight: "600",
-        fontSize: 16,
-    },
-    card: {
-        flexDirection: "row",
-        backgroundColor: "#eee",
-        borderRadius: 6,
-        marginHorizontal: 15,
-        marginVertical: 7,
+        borderRadius: 10,
         padding: 10,
+        marginTop: 10,
+    },
+    button: {
+        backgroundColor: "#2ecc71",
+        padding: 15,
+        borderRadius: 10,
+        marginTop: 15,
         alignItems: "center",
     },
-    cardImage: {
-        width: 100,
-        height: 70,
-        borderRadius: 6,
-        marginRight: 10,
+    buttonText: { color: "#fff", fontWeight: "bold" },
+    card: {
+        backgroundColor: "#f9f9f9",
+        padding: 15,
+        marginBottom: 10,
+        borderRadius: 10,
+        borderColor: "#ddd",
+        borderWidth: 1,
     },
-    cardContent: {
-        flex: 1,
-    },
-    hotelName: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#2c3e50",
-    },
-    hotelDescription: {
-        fontSize: 14,
-        color: "#34495e",
-        marginVertical: 4,
-    },
-    hotelPrice: {
-        fontSize: 14,
-        color: "#27ae60",
-    },
+    hotelText: { fontSize: 16 },
     actions: {
         flexDirection: "row",
-        justifyContent: "flex-end",
+        marginTop: 10,
+        gap: 10,
     },
-    editButton: {
-        marginRight: 10,
-        padding: 6,
-        backgroundColor: "#2980b9",
-        borderRadius: 4,
+    actionBtn: {
+        flex: 1,
+        padding: 10,
+        borderRadius: 8,
+        alignItems: "center",
     },
-    deleteButton: {
-        padding: 6,
-        backgroundColor: "#c0392b",
-        borderRadius: 4,
-    },
-    actionText: {
-        color: "#fff",
-        fontWeight: "600",
-    },
-    emptyList: {
-        textAlign: "center",
-        marginTop: 40,
-        fontSize: 16,
-        color: "#666",
-    },
+    actionText: { color: "#fff", fontWeight: "bold" },
+    error: { color: "red", marginTop: 10 },
+    success: { color: "green", marginTop: 10 },
 });

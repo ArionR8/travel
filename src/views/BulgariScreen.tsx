@@ -1,3 +1,4 @@
+// src/views/BulgariScreen.tsx
 import React, { useEffect, useRef, useState } from "react";
 import {
     ActivityIndicator,
@@ -14,9 +15,14 @@ import Footer from "../components/Footer";
 import NavBoard from "../components/NavBoard";
 import { useBullgariImages } from "../viewmodels/useBulgariImage";
 
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../navigation/types";
+
 const { width } = Dimensions.get("window");
 
-export default function BullgariScreen({ navigation }) {
+type Props = NativeStackScreenProps<RootStackParamList, "Bulgari">;
+
+export default function BulgariScreen({ navigation }: Props) {
     const { images, loading, error } = useBullgariImages();
     const flatListRef = useRef<FlatList>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -26,9 +32,7 @@ export default function BullgariScreen({ navigation }) {
 
         const intervalId = setInterval(() => {
             let nextIndex = currentIndex + 1;
-            if (nextIndex >= images.length) {
-                nextIndex = 0;
-            }
+            if (nextIndex >= images.length) nextIndex = 0;
             setCurrentIndex(nextIndex);
             flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
         }, 3000);
@@ -61,7 +65,9 @@ export default function BullgariScreen({ navigation }) {
                     <Text style={styles.titleText}>Bankso | Bullgari</Text>
 
                     <Text style={styles.descriptionText}>
-                        Përjetoni aventurën e skijimit në Bullgari, një nga destinacionet më të njohura në Evropë për ski! Me peisazhet e saj mahnitëse dhe skistat e shkëlqyer, Bullgaria ofron mundësi të pafundme për të gjithë ata që duan të kalojnë një fundjavë të paharrueshme në mal.
+                        Përjetoni aventurën e skijimit në Bullgari, një nga destinacionet më të njohura në Evropë për ski! Me
+                        peisazhet e saj mahnitëse dhe skistat e shkëlqyer, Bullgaria ofron mundësi të pafundme për të gjithë ata
+                        që duan të kalojnë një fundjavë të paharrueshme në mal.
                     </Text>
                 </View>
 
@@ -93,7 +99,9 @@ export default function BullgariScreen({ navigation }) {
                     <Text style={styles.hotelTitle}>Hotel Lion Bansko</Text>
 
                     <Text style={styles.hotelDescription}>
-                        Mirë se vini në Hotel Lion Bansko, një destinacion ideal për ata që kërkojnë një përvojë të paharrueshme në zemër të natyrës. I vendosur në një nga resortet më të njohura të skijimit dhe turizmit në Bullgari, hoteli ofron komoditet dhe shërbim të shkëlqyer për çdo vizitor.
+                        Mirë se vini në Hotel Lion Bansko, një destinacion ideal për ata që kërkojnë një përvojë të paharrueshme në
+                        zemër të natyrës. I vendosur në një nga resortet më të njohura të skijimit dhe turizmit në Bullgari, hoteli
+                        ofron komoditet dhe shërbim të shkëlqyer për çdo vizitor.
                     </Text>
 
                     {/* Info Table */}

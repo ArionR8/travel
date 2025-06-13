@@ -16,6 +16,7 @@ import ManageAeoroportScreen from '../views/dashboard/ManageAeroportScreen';
 import ManageArazhmaniScreen from '../views/dashboard/ManageArazhmaniScreen';
 import ManageShtetiScreen from '../views/dashboard/ManageShtetiScreen';
 import DubaiScreen from '../views/DubaiScreen';
+import GreqiScreen from '../views/GreqiScreen';
 import HomeScreen from '../views/HomeScreen';
 import RegisterScreen from '../views/RegisterScreen';
 import { RootStackParamList } from './types';
@@ -26,7 +27,7 @@ export default function AppNavigator() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Home" component={HomeScreen} />
-            {/*<Stack.Screen name="Greqi" component={GreqiScreen} />*/}
+            <Stack.Screen name="Greqi" component={GreqiScreen} />
             <Stack.Screen name="Bulgari" component={BulgariScreen} />
             <Stack.Screen name="Dubai" component={DubaiScreen} />
             <Stack.Screen name="DubaiPrice" component={DubaiPrice} />
@@ -34,8 +35,6 @@ export default function AppNavigator() {
             <Stack.Screen name="ContactUs" component={ContactUsScreen} />
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
             <Stack.Screen name="GreqiSlider" component={GreqiSlider} />
-            <Stack.Screen name="GreqiHotels" component={GreqiHotels} />
-            <Stack.Screen name="BullgariSlider" component={BullgariSlider} />
             <Stack.Screen name="GreqiHotels" component={GreqiHotels} />
             <Stack.Screen name="BullgariSlider" component={BullgariSlider} />
             <Stack.Screen name="AddShteti" component={AddShtetiScreen} />
