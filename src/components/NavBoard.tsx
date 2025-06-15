@@ -24,7 +24,12 @@ export default function NavBoard({ navigation }: NavBoardProps) {
 
     const [showMenu, setShowMenu] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+
     const [creds, setCreds] = useState({ username: '', password: '' });
+    const [email, setEmail] = useState('');
+    const [forgotLoading, setForgotLoading] = useState(false);
+    const [forgotMessage, setForgotMessage] = useState<string | null>(null);
 
     const handleLogin = async () => {
         try {
@@ -41,6 +46,29 @@ export default function NavBoard({ navigation }: NavBoardProps) {
         logout();
         Alert.alert('👋 Logged out');
     };
+
+    // Example password reset handler
+    const handleForgotPassword = async () => {
+        if (!email) {
+            Alert.alert('Please enter your email.');
+            return;
+        }
+        setForgotLoading(true);
+        setForgotMessage(null);
+        try {
+            // Replace this with your real API call to send reset email
+            await fakeSendResetEmail(email);
+            setForgotMessage('Reset link sent! Check your email.');
+        } catch (err: any) {
+            Alert.alert('Error', err.message || 'Failed to send reset link');
+        } finally {
+            setForgotLoading(false);
+        }
+    };
+
+    // Fake API function, replace with real one
+    const fakeSendResetEmail = (email: string) =>
+        new Promise((res) => setTimeout(res, 1500));
 
     return (
         <View style={styles.container}>
@@ -103,7 +131,6 @@ export default function NavBoard({ navigation }: NavBoardProps) {
                         <Text style={styles.dropdownItem}>Dubai</Text>
                     </TouchableOpacity>
 
-                    {/* New ContactUs link */}
                     <TouchableOpacity
                         style={styles.itemWrapper}
                         onPress={() => {
@@ -153,6 +180,14 @@ export default function NavBoard({ navigation }: NavBoardProps) {
                             secureTextEntry
                         />
 
+                        {/* Forgot password link */}
+                        <TouchableOpacity onPress={() => {
+                            setShowLogin(false);
+                            setShowForgotPassword(true);
+                        }}>
+                            <Text style={styles.forgotText}>Forgot Password?</Text>
+                        </TouchableOpacity>
+
                         {authLoading ? (
                             <ActivityIndicator />
                         ) : (
@@ -173,6 +208,43 @@ export default function NavBoard({ navigation }: NavBoardProps) {
                             }}
                         >
                             <Text style={styles.registerText}>Don't have an account? Register</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Forgot Password Modal */}
+            <Modal visible={showForgotPassword} animationType="slide" transparent>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Forgot Password</Text>
+
+                        <TextInput
+                            placeholder="Enter your email"
+                            value={email}
+                            onChangeText={setEmail}
+                            style={styles.input}
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                        />
+
+                        {forgotLoading ? (
+                            <ActivityIndicator />
+                        ) : (
+                            <TouchableOpacity style={styles.loginButton} onPress={handleForgotPassword}>
+                                <Text style={styles.loginText}>Send Reset Link</Text>
+                            </TouchableOpacity>
+                        )}
+
+                        {forgotMessage ? <Text style={{ marginTop: 10, textAlign: 'center' }}>{forgotMessage}</Text> : null}
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                setShowForgotPassword(false);
+                                setShowLogin(true);
+                            }}
+                        >
+                            <Text style={styles.cancelText}>Back to Login</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -234,6 +306,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginBottom: 10,
         fontWeight: 'bold',
+        textAlign: 'center',
     },
     input: {
         borderWidth: 1,
@@ -261,6 +334,12 @@ const styles = StyleSheet.create({
         color: '#777',
         textAlign: 'center',
         marginTop: 15,
+        textDecorationLine: 'underline',
+    },
+    forgotText: {
+        color: '#3498db',
+        textAlign: 'right',
+        marginBottom: 12,
         textDecorationLine: 'underline',
     },
 });

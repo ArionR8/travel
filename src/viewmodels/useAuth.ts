@@ -1,7 +1,14 @@
-// /src/viewmodels/useAuth.ts
 import { useState } from "react";
 import * as Auth from "../services/AuthService";
 import { User } from "../services/AuthService";
+
+// ✅ Fix for stricter typing
+type RegisterInput = Required<Pick<
+    User,
+    "firstName" | "lastName" | "number" | "email" | "username"
+>> & {
+    password: string;
+};
 
 export function useAuth() {
     const [loading, setLoading] = useState(false);
@@ -21,14 +28,7 @@ export function useAuth() {
         }
     };
 
-    const register = async (userData: {
-        firstName: string;
-        lastName: string;
-        number: string;
-        email: string;
-        username: string;
-        password: string;
-    }): Promise<void> => {
+    const register = async (userData: RegisterInput): Promise<void> => {
         setLoading(true);
         setError(null);
         try {
@@ -41,5 +41,42 @@ export function useAuth() {
         }
     };
 
-    return { login, register, loading, error };
+    const requestReset = async (email: string): Promise<string> => {
+        setLoading(true);
+        setError(null);
+        try {
+            const token = await Auth.requestPasswordReset(email);
+            return token;
+        } catch (e: any) {
+            setError(e.message);
+            throw e;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const resetPassword = async (
+        token: string,
+        newPassword: string
+    ): Promise<void> => {
+        setLoading(true);
+        setError(null);
+        try {
+            await Auth.resetPassword(token, newPassword);
+        } catch (e: any) {
+            setError(e.message);
+            throw e;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return {
+        login,
+        register,
+        requestReset,
+        resetPassword,
+        loading,
+        error,
+    };
 }
