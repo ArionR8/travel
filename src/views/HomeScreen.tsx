@@ -149,19 +149,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                             </View>
                         </View>
                     </View>
-
-                    {/* Call to Action Section */}
-                    <View style={styles.ctaSection}>
-                        <View style={styles.ctaContainer}>
-                            <Text style={styles.ctaTitle}>Gati për Aventurën Tuaj?</Text>
-                            <Text style={styles.ctaSubtitle}>
-                                Kontaktoni me ne sot dhe filloni planifikimin e udhëtimit tuaj të ëndrrave
-                            </Text>
-                            <View style={styles.ctaButton}>
-                                <Text style={styles.ctaButtonText}>Planifiko Udhëtimin</Text>
-                            </View>
-                        </View>
-                    </View>
                 </View>
 
                 <Subscription />

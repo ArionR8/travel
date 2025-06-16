@@ -25,7 +25,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Greqi" component={GreqiScreen} />
             <Stack.Screen name="Bulgari" component={BulgariScreen} />
