@@ -75,7 +75,7 @@ export default function AddAirportScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.container}
         >
-            <ScrollView 
+            <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
@@ -163,8 +163,8 @@ export default function AddAirportScreen() {
                     </View>
 
                     {/* Submit Button */}
-                    <TouchableOpacity 
-                        style={styles.submitButton} 
+                    <TouchableOpacity
+                        style={styles.submitButton}
                         onPress={onSubmit}
                         activeOpacity={0.8}
                     >

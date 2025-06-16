@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -57,7 +56,7 @@ export default function AddAranzhmaniScreen() {
     const [airportItems, setAirportItems] = useState<{ label: string; value: string }[]>([]);
 
     useEffect(() => {
-        axios.get('http://10.116.10.241:5000/api/shtetet')
+        axios.get('http://192.168.100.90:5000/api/shtetet')
             .then(res => {
                 setShtetet(res.data);
                 setShtetItems(res.data.map((s: any) => ({
@@ -86,68 +85,16 @@ export default function AddAranzhmaniScreen() {
         }
     }, [form.shtetiId]);
 
-    const validateForm = () => {
-        if (!form.titulli.trim()) {
-            Alert.alert('Gabim', 'Ju lutem shkruani titullin');
-            return false;
-        }
-        if (!form.shtetiId) {
-            Alert.alert('Gabim', 'Ju lutem zgjidhni shtetin');
-            return false;
-        }
-        if (!form.airportId) {
-            Alert.alert('Gabim', 'Ju lutem zgjidhni aeroportin');
-            return false;
-        }
-        return true;
-    };
-
     const onSubmit = () => {
-        if (!validateForm()) return;
-        
         const sanitized = {
             ...form,
-            cmimi: form.cmimi === '' ? undefined : form.cmimi?.toString(),
-            nrPersonave: form.nrPersonave === '' ? undefined : form.nrPersonave?.toString(),
-            nrNeteve: form.nrNeteve === '' ? undefined : form.nrNeteve?.toString(),
-            rating: form.rating === '' ? undefined : form.rating?.toString()
+            cmimi: form.cmimi === '' ? undefined : form.cmimi.toString(),
+            nrPersonave: form.nrPersonave === '' ? undefined : form.nrPersonave.toString(),
+            nrNeteve: form.nrNeteve === '' ? undefined : form.nrNeteve.toString(),
+            rating: form.rating === '' ? undefined : form.rating.toString()
         };
         create(sanitized);
     };
-
-    const renderInputField = (label: string, value: string, onChangeText: (text: string) => void, placeholder: string, keyboardType: any = 'default') => (
-        <View style={styles.inputContainer}>
-            <Text style={styles.label}>{label}</Text>
-            <TextInput
-                style={styles.input}
-                value={value}
-                onChangeText={onChangeText}
-                placeholder={placeholder}
-                placeholderTextColor="#999"
-                keyboardType={keyboardType}
-            />
-        </View>
-    );
-
-    const renderNumericField = (label: string, key: keyof FormData, placeholder: string) => (
-        <View style={styles.inputContainer}>
-            <Text style={styles.label}>{label}</Text>
-            <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={form[key]?.toString() || ''}
-                onChangeText={v => {
-                    const num = Number(v);
-                    setForm(f => ({
-                        ...f,
-                        [key]: isNaN(num) ? '' : num
-                    }));
-                }}
-                placeholder={placeholder}
-                placeholderTextColor="#999"
-            />
-        </View>
-    );
 
     return (
         <>
@@ -156,22 +103,21 @@ export default function AddAranzhmaniScreen() {
                 <Text style={styles.headerTitle}>Shto Aranzhmani të Ri</Text>
                 <Text style={styles.headerSubtitle}>Plotësoni informacionet e udhëtimit</Text>
             </View>
-            
+
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 style={styles.container}
             >
-                <ScrollView 
+                <ScrollView
                     keyboardShouldPersistTaps="handled"
-                    showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
                 >
                     {message && (
                         <View style={styles.successContainer}>
                             <Text style={styles.successText}>✅ {message}</Text>
                         </View>
                     )}
-                    
                     {error && (
                         <View style={styles.errorContainer}>
                             <Text style={styles.errorText}>❌ {error}</Text>
@@ -179,118 +125,188 @@ export default function AddAranzhmaniScreen() {
                     )}
 
                     <View style={styles.formCard}>
-                        {/* Basic Information Section */}
-                        <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>📋 Informacione Bazë</Text>
-                            
-                            {renderInputField(
-                                "Titulli i Udhëtimit",
-                                form.titulli,
-                                v => setForm(f => ({ ...f, titulli: v })),
-                                "Shkruani titullin e udhëtimit"
-                            )}
+                        <Text style={styles.sectionTitle}>📋 Informacione Bazë</Text>
 
-                            <View style={styles.inputContainer}>
-                                <Text style={styles.label}>🌍 Shteti</Text>
-                                <DropDownPicker
-                                    open={shtetOpen}
-                                    value={form.shtetiId}
-                                    items={shtetItems}
-                                    setOpen={setShtetOpen}
-                                    setValue={cb => setForm(f => ({ ...f, shtetiId: cb(f.shtetiId) }))}
-                                    setItems={setShtetItems}
-                                    placeholder="Zgjidh destinacionin"
-                                    zIndex={1000}
-                                    zIndexInverse={3000}
-                                    style={styles.dropdown}
-                                    dropDownContainerStyle={styles.dropdownContainer}
-                                    textStyle={styles.dropdownText}
-                                    placeholderStyle={styles.dropdownPlaceholder}
-                                    listMode="MODAL"
-                                    searchable={true}
-                                    searchPlaceholder="Kërko shtetin..."
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Titulli</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={form.titulli}
+                                onChangeText={v => setForm(f => ({ ...f, titulli: v }))}
+                                placeholder="Shkruani titullin"
+                                placeholderTextColor="#999"
+                            />
+                        </View>
+
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Shteti</Text>
+                            <DropDownPicker
+                                open={shtetOpen}
+                                value={form.shtetiId}
+                                items={shtetItems}
+                                setOpen={setShtetOpen}
+                                setValue={cb => setForm(f => ({ ...f, shtetiId: cb(f.shtetiId) }))}
+                                setItems={setShtetItems}
+                                placeholder="Zgjidh shtetin"
+                                zIndex={1000}
+                                zIndexInverse={3000}
+                                style={styles.dropdown}
+                                dropDownContainerStyle={styles.dropdownContainer}
+                                textStyle={styles.dropdownText}
+                                placeholderStyle={styles.dropdownPlaceholder}
+                                listMode="MODAL"
+                            />
+                        </View>
+
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Aeroporti</Text>
+                            <DropDownPicker
+                                open={airportOpen}
+                                value={form.airportId}
+                                items={airportItems}
+                                setOpen={setAirportOpen}
+                                setValue={cb => setForm(f => ({ ...f, airportId: cb(f.airportId) }))}
+                                setItems={setAirportItems}
+                                placeholder="Zgjidh aeroportin"
+                                zIndex={900}
+                                zIndexInverse={2900}
+                                disabled={!form.shtetiId}
+                                style={[styles.dropdown, !form.shtetiId && styles.disabledDropdown]}
+                                dropDownContainerStyle={styles.dropdownContainer}
+                                textStyle={styles.dropdownText}
+                                placeholderStyle={styles.dropdownPlaceholder}
+                                listMode="MODAL"
+                            />
+                        </View>
+
+                        <Text style={styles.sectionTitle}>💰 Detajet e Çmimit</Text>
+
+                        <View style={styles.row}>
+                            <View style={[styles.inputContainer, { flex: 1 }]}>
+                                <Text style={styles.label}>Cmimi (EUR)</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    keyboardType="numeric"
+                                    value={form.cmimi?.toString() || ''}
+                                    onChangeText={v => {
+                                        const num = Number(v);
+                                        setForm(f => ({
+                                            ...f,
+                                            cmimi: isNaN(num) ? '' : num
+                                        }));
+                                    }}
+                                    placeholder="0.00"
+                                    placeholderTextColor="#999"
                                 />
                             </View>
 
-                            <View style={styles.inputContainer}>
-                                <Text style={styles.label}>✈️ Aeroporti</Text>
-                                <DropDownPicker
-                                    open={airportOpen}
-                                    value={form.airportId}
-                                    items={airportItems}
-                                    setOpen={setAirportOpen}
-                                    setValue={cb => setForm(f => ({ ...f, airportId: cb(f.airportId) }))}
-                                    setItems={setAirportItems}
-                                    placeholder="Zgjidh aeroportin"
-                                    zIndex={900}
-                                    zIndexInverse={2900}
-                                    disabled={!form.shtetiId}
-                                    style={[styles.dropdown, !form.shtetiId && styles.disabledDropdown]}
-                                    dropDownContainerStyle={styles.dropdownContainer}
-                                    textStyle={styles.dropdownText}
-                                    placeholderStyle={styles.dropdownPlaceholder}
-                                    listMode="MODAL"
-                                    searchable={true}
-                                    searchPlaceholder="Kërko aeroportin..."
+                            <View style={[styles.inputContainer, { flex: 1 }]}>
+                                <Text style={styles.label}>Rating</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    keyboardType="numeric"
+                                    value={form.rating?.toString() || ''}
+                                    onChangeText={v => {
+                                        const num = Number(v);
+                                        setForm(f => ({
+                                            ...f,
+                                            rating: isNaN(num) ? '' : num
+                                        }));
+                                    }}
+                                    placeholder="1-5"
+                                    placeholderTextColor="#999"
                                 />
                             </View>
                         </View>
 
-                        {/* Pricing & Details Section */}
-                        <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>💰 Detajet e Çmimit</Text>
-                            
-                            <View style={styles.row}>
-                                {renderNumericField("Cmimi (EUR)", "cmimi", "0.00")}
-                                {renderNumericField("Rating ⭐", "rating", "1-5")}
+                        <View style={styles.row}>
+                            <View style={[styles.inputContainer, { flex: 1 }]}>
+                                <Text style={styles.label}>Nr Personave</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    keyboardType="numeric"
+                                    value={form.nrPersonave?.toString() || ''}
+                                    onChangeText={v => {
+                                        const num = Number(v);
+                                        setForm(f => ({
+                                            ...f,
+                                            nrPersonave: isNaN(num) ? '' : num
+                                        }));
+                                    }}
+                                    placeholder="1"
+                                    placeholderTextColor="#999"
+                                />
                             </View>
 
-                            <View style={styles.row}>
-                                {renderNumericField("Nr. Personave", "nrPersonave", "1")}
-                                {renderNumericField("Nr. Neteve", "nrNeteve", "1")}
+                            <View style={[styles.inputContainer, { flex: 1 }]}>
+                                <Text style={styles.label}>Nr Neteve</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    keyboardType="numeric"
+                                    value={form.nrNeteve?.toString() || ''}
+                                    onChangeText={v => {
+                                        const num = Number(v);
+                                        setForm(f => ({
+                                            ...f,
+                                            nrNeteve: isNaN(num) ? '' : num
+                                        }));
+                                    }}
+                                    placeholder="1"
+                                    placeholderTextColor="#999"
+                                />
                             </View>
                         </View>
 
-                        {/* Accommodation Section */}
-                        <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>🏨 Akomodimi</Text>
-                            
-                            {renderInputField(
-                                "Lloji i Dhomës",
-                                form.llojiDhomes,
-                                v => setForm(f => ({ ...f, llojiDhomes: v })),
-                                "p.sh. Dhomë dopio, Suite, Single"
-                            )}
+                        <Text style={styles.sectionTitle}>🏨 Akomodimi</Text>
 
-                            {renderInputField(
-                                "Shërbimi",
-                                form.sherbimi,
-                                v => setForm(f => ({ ...f, sherbimi: v })),
-                                "p.sh. All-Inclusive, Half Board"
-                            )}
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Lloji i Dhomës</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={form.llojiDhomes}
+                                onChangeText={v => setForm(f => ({ ...f, llojiDhomes: v }))}
+                                placeholder="Dhomë dopio"
+                                placeholderTextColor="#999"
+                            />
                         </View>
 
-                        {/* Travel Dates Section */}
-                        <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>📅 Datat e Udhëtimit</Text>
-                            
-                            {renderInputField(
-                                "Data e Nisjes",
-                                form.dataNisjes,
-                                v => setForm(f => ({ ...f, dataNisjes: v })),
-                                "YYYY-MM-DD"
-                            )}
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Sherbimi</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={form.sherbimi}
+                                onChangeText={v => setForm(f => ({ ...f, sherbimi: v }))}
+                                placeholder="P.sh. All-Inclusive"
+                                placeholderTextColor="#999"
+                            />
+                        </View>
 
-                            {renderInputField(
-                                "Data e Kthimit",
-                                form.dataKthimit,
-                                v => setForm(f => ({ ...f, dataKthimit: v })),
-                                "YYYY-MM-DD"
-                            )}
+                        <Text style={styles.sectionTitle}>📅 Datat e Udhëtimit</Text>
+
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Data e Nisjes</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={form.dataNisjes}
+                                onChangeText={v => setForm(f => ({ ...f, dataNisjes: v }))}
+                                placeholder="YYYY-MM-DD"
+                                placeholderTextColor="#999"
+                            />
+                        </View>
+
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.label}>Data e Kthimit</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={form.dataKthimit}
+                                onChangeText={v => setForm(f => ({ ...f, dataKthimit: v }))}
+                                placeholder="YYYY-MM-DD"
+                                placeholderTextColor="#999"
+                            />
                         </View>
 
                         <TouchableOpacity style={styles.submitButton} onPress={onSubmit}>
-                            <Text style={styles.submitButtonText}>🚀 Shto Aranzhmani</Text>
+                            <Text style={styles.submitButtonText}>Shto Aranzhmani</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -343,9 +359,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 4,
-    },
-    section: {
-        marginBottom: 24,
     },
     sectionTitle: {
         fontSize: 18,
@@ -435,13 +448,13 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     submitButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#2196F3',
         borderRadius: 16,
         paddingVertical: 16,
         paddingHorizontal: 24,
         alignItems: 'center',
         marginTop: 16,
-        shadowColor: '#4CAF50',
+        shadowColor: '#2196F3',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
@@ -451,6 +464,5 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         fontWeight: '700',
-        letterSpacing: 0.5,
     },
 });

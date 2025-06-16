@@ -10,61 +10,71 @@ import {
 
 export function useAranzhmani() {
     const [items, setItems] = useState<Aranzhmani[]>([]);
-    const [count, setCount] = useState<number>(0);  // new state for count
+    const [count, setCount] = useState<number>(0);  // NEW: Count state
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
 
-    const load = async () => {
+    const loadData = async () => {
         setLoading(true);
         try {
-            const arr = await fetchAranzhmanet();
+            const [arr, cnt] = await Promise.all([
+                fetchAranzhmanet(),
+                countAranzhmanet()  // NEW: Fetch count simultaneously
+            ]);
             setItems(arr);
-
-            // fetch count too
-            const c = await countAranzhmanet();
-            setCount(c);
-        } catch (err) {
-            console.error("fetchAranzhmanet or countAranzhmanet error:", err);
-            setError('Failed to load');
+            setCount(cnt);  // NEW: Set count
+        } catch (err: any) {
+            setError(err.message);
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => { load(); }, []);
+    useEffect(() => {
+        loadData();
+    }, []);
 
     const create = async (data: Partial<Aranzhmani>) => {
         try {
             await addAranzhmani(data);
-            setMessage('Added');
-            await load();  // refresh items and count
-        } catch {
-            setError('Add failed');
+            setMessage('Offer added successfully');
+            loadData();  // Refresh data and count
+        } catch (err: any) {
+            setError(err.message);
         }
     };
 
     const modify = async (id: string, data: Partial<Aranzhmani>) => {
         try {
             await updateAranzhmani(id, data);
-            setMessage('Updated');
-            await load();
-        } catch {
-            setError('Update failed');
+            setMessage('Offer updated successfully');
+            loadData();
+        } catch (err: any) {
+            setError(err.message);
         }
     };
 
     const remove = async (id: string) => {
         try {
             await deleteAranzhmani(id);
-            setMessage('Deleted');
-            setItems(v => v.filter(i => i.id !== id));
-            // update count after deletion
-            setCount(c => c - 1);
-        } catch {
-            setError('Delete failed');
+            setMessage('Offer deleted successfully');
+            loadData();
+        } catch (err: any) {
+            setError(err.message);
         }
     };
 
-    return { items, count, loading, error, message, create, modify, remove };
+    // NEW: Return count with other values
+    return {
+        items,
+        count,
+        loading,
+        error,
+        message,
+        create,
+        modify,
+        remove,
+        refresh: loadData  // NEW: Expose refresh function
+    };
 }
