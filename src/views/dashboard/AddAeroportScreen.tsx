@@ -14,13 +14,23 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { fetchShtetet } from '../../services/ShtetiService';
 import { useAirport } from '../../viewmodels/useAeroport';
 
+// Add navigation imports
+import { StackNavigationProp } from '@react-navigation/stack';
+import DashboardNavBoard from '../../components/dashboard/NavBoard';
+import { RootStackParamList } from '../../navigation/types';
+
 interface FormData {
     emri: string;
     akronimi: string;
     shtetiId: string;
 }
 
-export default function AddAirportScreen() {
+// Add navigation props type
+type AddAirportScreenProps = {
+    navigation: StackNavigationProp<RootStackParamList, 'AddAirport'>;
+};
+
+export default function AddAirportScreen({ navigation }: AddAirportScreenProps) {
     const { create, message, error } = useAirport();
 
     const [form, setForm] = useState<FormData>({
@@ -71,108 +81,113 @@ export default function AddAirportScreen() {
     };
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
-        >
-            <ScrollView
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
+        <View style={{ flex: 1 }}>
+            {/* Add Dashboard Navigation Board */}
+            <DashboardNavBoard navigation={navigation} />
+
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.container}
             >
-                {/* Header */}
-                <View style={styles.header}>
-                    <Text style={styles.title}>Regjistro Aeroport të Ri</Text>
-                    <Text style={styles.subtitle}>Plotëso të dhënat për aeroportin</Text>
-                </View>
-
-                {/* Messages */}
-                {message && (
-                    <View style={styles.messageContainer}>
-                        <Text style={styles.messageSuccess}>✅ {message}</Text>
+                <ScrollView
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {/* Header - Reduced top padding to account for nav board */}
+                    <View style={[styles.header, { marginTop: 10 }]}>
+                        <Text style={styles.title}>Regjistro Aeroport të Ri</Text>
+                        <Text style={styles.subtitle}>Plotëso të dhënat për aeroportin</Text>
                     </View>
-                )}
-                {error && (
-                    <View style={styles.messageContainer}>
-                        <Text style={styles.messageError}>❌ {error}</Text>
-                    </View>
-                )}
 
-                {/* Form */}
-                <View style={styles.formContainer}>
-                    {/* Airport Name Field */}
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Emri i Aeroportit</Text>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={[
-                                    styles.input,
-                                    form.emri ? styles.inputFocused : null
-                                ]}
-                                value={form.emri}
-                                onChangeText={(v) => setForm((f) => ({ ...f, emri: v }))}
-                                placeholder="Shkruani emrin e aeroportit"
-                                placeholderTextColor="#9CA3AF"
-                            />
+                    {/* Messages */}
+                    {message && (
+                        <View style={styles.messageContainer}>
+                            <Text style={styles.messageSuccess}>✅ {message}</Text>
                         </View>
-                    </View>
-
-                    {/* Acronym Field */}
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Akronimi</Text>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={[
-                                    styles.input,
-                                    form.akronimi ? styles.inputFocused : null
-                                ]}
-                                value={form.akronimi}
-                                onChangeText={(v) => setForm((f) => ({ ...f, akronimi: v.toUpperCase() }))}
-                                placeholder="Shembull: TIA"
-                                placeholderTextColor="#9CA3AF"
-                                maxLength={3}
-                                autoCapitalize="characters"
-                            />
+                    )}
+                    {error && (
+                        <View style={styles.messageContainer}>
+                            <Text style={styles.messageError}>❌ {error}</Text>
                         </View>
-                        <Text style={styles.helperText}>Maksimumi 3 shkronja</Text>
-                    </View>
+                    )}
 
-                    {/* Country Dropdown */}
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Zgjidh Shtetin</Text>
-                        <View style={styles.dropdownWrapper}>
-                            <DropDownPicker
-                                open={open}
-                                value={value}
-                                items={items}
-                                setOpen={setOpen}
-                                setValue={setValue}
-                                setItems={setItems}
-                                placeholder="-- Zgjidh shtetin --"
-                                style={styles.dropdown}
-                                dropDownContainerStyle={styles.dropdownContainer}
-                                textStyle={styles.dropdownText}
-                                placeholderStyle={styles.dropdownPlaceholder}
-                                zIndex={1000}
-                                zIndexInverse={3000}
-                                listMode="SCROLLVIEW"
-                                scrollViewProps={{
-                                    nestedScrollEnabled: true,
-                                }}
-                            />
+                    {/* Form */}
+                    <View style={styles.formContainer}>
+                        {/* Airport Name Field */}
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Emri i Aeroportit</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={[
+                                        styles.input,
+                                        form.emri ? styles.inputFocused : null
+                                    ]}
+                                    value={form.emri}
+                                    onChangeText={(v) => setForm((f) => ({ ...f, emri: v }))}
+                                    placeholder="Shkruani emrin e aeroportit"
+                                    placeholderTextColor="#9CA3AF"
+                                />
+                            </View>
                         </View>
-                    </View>
 
-                    {/* Submit Button */}
-                    <TouchableOpacity
-                        style={styles.submitButton}
-                        onPress={onSubmit}
-                        activeOpacity={0.8}
-                    >
-                        <Text style={styles.submitButtonText}>🛫 Regjistro Aeroportin</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                        {/* Acronym Field */}
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Akronimi</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={[
+                                        styles.input,
+                                        form.akronimi ? styles.inputFocused : null
+                                    ]}
+                                    value={form.akronimi}
+                                    onChangeText={(v) => setForm((f) => ({ ...f, akronimi: v.toUpperCase() }))}
+                                    placeholder="Shembull: TIA"
+                                    placeholderTextColor="#9CA3AF"
+                                    maxLength={3}
+                                    autoCapitalize="characters"
+                                />
+                            </View>
+                            <Text style={styles.helperText}>Maksimumi 3 shkronja</Text>
+                        </View>
+
+                        {/* Country Dropdown */}
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Zgjidh Shtetin</Text>
+                            <View style={styles.dropdownWrapper}>
+                                <DropDownPicker
+                                    open={open}
+                                    value={value}
+                                    items={items}
+                                    setOpen={setOpen}
+                                    setValue={setValue}
+                                    setItems={setItems}
+                                    placeholder="-- Zgjidh shtetin --"
+                                    style={styles.dropdown}
+                                    dropDownContainerStyle={styles.dropdownContainer}
+                                    textStyle={styles.dropdownText}
+                                    placeholderStyle={styles.dropdownPlaceholder}
+                                    zIndex={1000}
+                                    zIndexInverse={3000}
+                                    listMode="SCROLLVIEW"
+                                    scrollViewProps={{
+                                        nestedScrollEnabled: true,
+                                    }}
+                                />
+                            </View>
+                        </View>
+
+                        {/* Submit Button */}
+                        <TouchableOpacity
+                            style={styles.submitButton}
+                            onPress={onSubmit}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.submitButtonText}>🛫 Regjistro Aeroportin</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </View>
     );
 }
 
@@ -184,6 +199,7 @@ const styles = StyleSheet.create({
     scrollContent: {
         flexGrow: 1,
         padding: 20,
+        paddingTop: 10, // Reduced top padding
     },
     header: {
         marginBottom: 32,

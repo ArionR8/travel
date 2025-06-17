@@ -18,6 +18,11 @@ import {
 import { Aranzhmani } from '../../models/Aranzhmani';
 import { useAranzhmani } from '../../viewmodels/useArazhmani';
 
+// Add navigation imports
+import { StackNavigationProp } from '@react-navigation/stack';
+import DashboardNavBoard from '../../components/dashboard/NavBoard';
+import { RootStackParamList } from '../../navigation/types';
+
 const { width } = Dimensions.get('window');
 
 interface EditModalProps {
@@ -48,7 +53,7 @@ const EditModal: React.FC<EditModalProps> = ({ visible, item, onClose, onSave })
 
     const handleSave = () => {
         if (!item?.id) return;
-        
+
         if (!editForm.titulli?.trim()) {
             Alert.alert('Gabim', 'Titulli është i detyrueshëm');
             return;
@@ -205,7 +210,12 @@ const EditModal: React.FC<EditModalProps> = ({ visible, item, onClose, onSave })
     );
 };
 
-export default function ManageAranzhmaniScreen() {
+// Add navigation props type
+type ManageAranzhmaniScreenProps = {
+    navigation: StackNavigationProp<RootStackParamList, 'ManageAranzhmani'>;
+};
+
+export default function ManageAranzhmaniScreen({ navigation }: ManageAranzhmaniScreenProps) {
     const { items, loading, error, message, modify, remove } = useAranzhmani();
     const [refreshing, setRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -347,8 +357,12 @@ export default function ManageAranzhmaniScreen() {
     }
 
     return (
-        <>
+        <View style={{ flex: 1 }}>
             <StatusBar barStyle="light-content" backgroundColor="#2196F3" />
+
+            {/* Add Dashboard Navigation Board */}
+            <DashboardNavBoard navigation={navigation} />
+
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Menaxho Aranzhmanet</Text>
                 <Text style={styles.headerSubtitle}>
@@ -423,14 +437,14 @@ export default function ManageAranzhmaniScreen() {
                     onSave={modify}
                 />
             </View>
-        </>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     header: {
         backgroundColor: '#2196F3',
-        paddingTop: 60,
+        paddingTop: 20, // Reduced from 60 to account for nav board
         paddingBottom: 20,
         paddingHorizontal: 20,
         borderBottomLeftRadius: 20,

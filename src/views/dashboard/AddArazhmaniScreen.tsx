@@ -15,6 +15,11 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { fetchAirportsByShteti } from '../../services/AeroportiService';
 import { useAranzhmani } from '../../viewmodels/useArazhmani';
 
+// Add these imports for navigation
+import { StackNavigationProp } from '@react-navigation/stack';
+import DashboardNavBoard from '../../components/dashboard/NavBoard';
+import { RootStackParamList } from '../../navigation/types';
+
 interface FormData {
     titulli: string;
     shtetiId: string;
@@ -29,7 +34,12 @@ interface FormData {
     rating: number | '';
 }
 
-export default function AddAranzhmaniScreen() {
+// Define props type for navigation
+type AddAranzhmaniScreenProps = {
+    navigation: StackNavigationProp<RootStackParamList, 'AddAranzhmani'>;
+};
+
+export default function AddAranzhmaniScreen({ navigation }: AddAranzhmaniScreenProps) {
     const { create, message, error } = useAranzhmani();
 
     const [form, setForm] = useState<FormData>({
@@ -97,8 +107,12 @@ export default function AddAranzhmaniScreen() {
     };
 
     return (
-        <>
+        <View style={{ flex: 1 }}>
             <StatusBar barStyle="light-content" backgroundColor="#2196F3" />
+
+            {/* Add Dashboard Navigation Board */}
+            <DashboardNavBoard navigation={navigation} />
+
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Shto Aranzhmani të Ri</Text>
                 <Text style={styles.headerSubtitle}>Plotësoni informacionet e udhëtimit</Text>
@@ -311,14 +325,14 @@ export default function AddAranzhmaniScreen() {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
-        </>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     header: {
         backgroundColor: '#2196F3',
-        paddingTop: 60,
+        paddingTop: 20, // Reduced from 60 to account for nav board
         paddingBottom: 20,
         paddingHorizontal: 20,
         borderBottomLeftRadius: 20,
